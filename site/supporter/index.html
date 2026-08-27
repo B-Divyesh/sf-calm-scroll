@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#FFD447" />
+    <meta name="robots" content="noindex" />
+    <title>Supporter field guide — Calm Scroll</title>
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+    <header class="site-header"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"><i></i></span><span>Calm Scroll</span></a><nav aria-label="Page navigation"><a class="nav-download" href="/">Back home</a></nav></header>
+    <main id="main" class="supporter-main">
+      <a class="back-link" href="/#support">← Back to Supporter edition</a>
+      <p class="section-code">Supporter edition</p>
+      <h1>Motion-testing field guide</h1>
+      <section id="supporter-locked" class="supporter-lock">
+        <h2>Verify a Supporter license first.</h2>
+        <p>Return to the Supporter edition section, paste the license token from your receipt, and restore it in this browser. The free extension is unaffected.</p>
+        <a class="button button-dark" href="/#support">Restore a license</a>
+      </section>
+      <article id="supporter-guide" class="field-guide" hidden>
+        <header><p class="section-code">Print / one sheet per site</p><h2>Can I read this page steadily?</h2><p>Use this worksheet to record what helps on motion-heavy sites. It is a personal observation tool, not a clinical assessment.</p></header>
+        <ul class="check-sheet">
+          <li><span class="check-box" aria-hidden="true"></span><div><strong>Start with the page untouched</strong><span>Note autoplay, drifting backgrounds, sticky layers, smooth jumps, or motion that follows the pointer.</span></div></li>
+          <li><span class="check-box" aria-hidden="true"></span><div><strong>Turn Stable mode on</strong><span>Wait ten seconds. Check whether reading position, media, keyboard focus, and menus still work.</span></div></li>
+          <li><span class="check-box" aria-hidden="true"></span><div><strong>Try only necessary exceptions</strong><span>Allow media or keep fixed/sticky layers one at a time. Record which exception restores a needed control.</span></div></li>
+          <li><span class="check-box" aria-hidden="true"></span><div><strong>Save the least-motion setting</strong><span>Keep the smallest set of exceptions that preserves the content you need.</span></div></li>
+        </ul>
+        <h3>Site and observations</h3><div class="notes-lines" aria-label="Blank ruled area for printed notes"></div>
+        <button id="print-guide" class="button button-primary print-button" type="button">Print this guide</button>
+      </article>
+    </main>
+    <footer class="site-footer"><div><a class="brand footer-brand" href="/"><span class="brand-mark" aria-hidden="true"><i></i></span><span>Calm Scroll</span></a></div><nav aria-label="Footer links"><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a></nav></footer>
+    <script type="module" src="/src/main.ts"></script>
+    <script type="module" src="/src/supporter.ts"></script>
+  </body>
+</html>

@@ -1,7 +1,7 @@
 import { browser } from 'wxt/browser';
 import type { PopupStatus } from '../../src/core/messages';
 import { totalMotion } from '../../src/core/scanner';
-import { updateRule, type SiteRule, type SiteRules } from '../../src/core/rules';
+import { ruleFor, updateRule, type SiteRule, type SiteRules } from '../../src/core/rules';
 
 const get = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 const loading = get<HTMLElement>('loading');
@@ -50,8 +50,10 @@ function showError(detail?: string): void {
 
 async function inspect(): Promise<void> {
   try {
-    const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
-    if (!tab.id || !tab.url?.startsWith('http')) throw new Error('Open an ordinary http or https page, then try again.');
+    const tabs = await browser.tabs.query({ currentWindow: true });
+    const tab = tabs.find((candidate) => candidate.active && candidate.url?.startsWith('http'))
+      ?? tabs.find((candidate) => candidate.url?.startsWith('http'));
+    if (!tab?.id || !tab.url?.startsWith('http')) throw new Error('Open an ordinary http or https page, then try again.');
     tabId = tab.id;
     const response = await browser.tabs.sendMessage(tab.id, { type: 'CALM_SCROLL_STATUS' }) as PopupStatus;
     render(response);
@@ -67,7 +69,7 @@ async function saveAndApply(patch: Partial<SiteRule>): Promise<void> {
   try {
     const stored = await browser.storage.local.get('siteRules') as { siteRules?: SiteRules };
     const siteRules = updateRule(stored.siteRules, current.hostname, patch);
-    const rule = siteRules[current.hostname];
+    const rule = ruleFor(siteRules, current.hostname);
     await browser.storage.local.set({ siteRules });
     const response = await browser.tabs.sendMessage(tabId, { type: 'CALM_SCROLL_APPLY', rule }) as PopupStatus;
     render(response);

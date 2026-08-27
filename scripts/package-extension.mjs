@@ -1,11 +1,12 @@
 import { createWriteStream } from 'node:fs';
-import { mkdir, cp, stat } from 'node:fs/promises';
+import { mkdir, cp, rm, stat } from 'node:fs/promises';
 import archiver from 'archiver';
 
 const source = '.output/chrome-mv3';
 await stat(`${source}/manifest.json`);
 await mkdir('dist/extension', { recursive: true });
 await mkdir('dist/site/downloads', { recursive: true });
+await rm('dist/extension/chrome-mv3', { recursive: true, force: true });
 await cp(source, 'dist/extension/chrome-mv3', { recursive: true });
 
 const output = createWriteStream('dist/site/downloads/calm-scroll-chrome-v1.0.0.zip');
