@@ -42,10 +42,10 @@ Local Lighthouse (Chrome desktop, local production preview, full-page screenshot
 
 ## Deployment and consumer verification
 
-Deploy `dist/site/` using the static deployment configuration already committed in `public/staticwebapp.config.json`. After the deployment settles, verify the exact release with:
+Deployed `dist/site/` with `/opt/fleet/lib/deploy-static.sh calm-scroll /work/repo/dist/site` on 2026-08-27. Azure Static Web Apps deployment `221e1049-36dd-460c-a70b-048c542ae45b` succeeded and `https://calm-scroll.sociobot.in/release.json` reports source commit `9115873962a4450c4b0a3492ec842b9392f83496` and the checksum above. The following exact live gate passed against that deployed commit:
 
 ```bash
-EXPECTED_RELEASE_SHA=<deployed-main-commit> npm run test:live
+EXPECTED_RELEASE_SHA=9115873962a4450c4b0a3492ec842b9392f83496 npm run test:live
 ```
 
 The consumer package is `dist/site/downloads/calm-scroll-chrome-v1.0.0.zip`; unzip it and load its contents through Chrome’s **Load unpacked** flow. The package is an unsigned MV3 pilot archive, as before; browser-store publication and billing registration remain factory operations.
