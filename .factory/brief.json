@@ -1,0 +1,11 @@
+{
+  "slug": "calm-scroll",
+  "title": "Calm Scroll",
+  "territory": "utilities",
+  "user": "People with vestibular disorders or screen-induced motion sickness who need a stable way to read ordinary web pages without parallax, auto-advance, or animated scrolling.",
+  "smallest_useful_product": "A browser extension that detects autoplay, transforms, smooth-scroll, sticky animation, and parallax; offers a one-click stable reading mode plus per-site exceptions.",
+  "success_measure": "In a two-week pilot, users keep stable mode enabled on at least five sites and report a 50% reduction in sessions abandoned for visual discomfort.",
+  "artifact_class": "browser-extension",
+  "monetization": "one-time",
+  "constraints": "Respect browser extension permissions and CSP; do not break keyboard focus or media controls; describe comfort outcomes as user-reported, not clinical."
+}
