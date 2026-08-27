@@ -46,7 +46,9 @@ npm run build        # clean reproducible build
 npm run check        # typecheck, test, and build
 ```
 
-`npm run build:site` is also standalone: it builds the extension, writes the static site to `dist/site/`, and places the installable zip at `dist/site/downloads/calm-scroll-chrome-v1.0.0.zip`.
+`npm run build:site` is also standalone: it builds the extension, writes the static site to `dist/site/`, and places the installable zip plus its SHA-256 sidecar at `dist/site/downloads/calm-scroll-chrome-v1.0.0.zip` and `dist/site/downloads/calm-scroll-chrome-v1.0.0.zip.sha256`.
+
+`npm run test:package` runs two clean builds and fails unless the ZIP SHA-256 is identical. After deployment, `npm run test:live` verifies the CSP, Permissions-Policy, immutable asset/download caching, service-worker revalidation, and the published ZIP checksum (set `LIVE_URL` to target another environment).
 
 Playwright downloads its pinned Chromium on first setup if the browser is not already installed:
 
@@ -71,7 +73,7 @@ Supporter checkout and license verification use only the Sociobot billing API. T
 
 ## Deployment
 
-Deploy `dist/site/` as the static root. Its `index.html` is at that root; legal pages, immutable hashed CSS/JS, a small offline service worker, sitemap, robots file, responsive images, and extension download are included. Infrastructure, DNS, billing registration, and store publication are intentionally outside this repository.
+Deploy `dist/site/` as the static root. Its committed `staticwebapp.config.json` sets a restrictive same-origin CSP (with only the Sociobot verification API in `connect-src`), a restrictive Permissions-Policy, one-year immutable caching for `/assets/*` and versioned downloads, and revalidation for HTML/service-worker entry points. Legal pages, a small offline service worker, sitemap, robots file, responsive images, and extension download are included. Infrastructure, DNS, billing registration, and store publication are intentionally outside this repository.
 
 ## License
 
