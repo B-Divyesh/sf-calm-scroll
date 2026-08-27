@@ -1,7 +1,39 @@
-# Calm Scroll v1 handoff
+# Calm Scroll verification handoff — FAIL
 
-Work order: `calm-scroll-build-1`  
-Completed: 2026-08-27  
+**Verifier work order:** `calm-scroll-verify-1`
+**Tested candidate:** `e900ae072f3150371878addd156f775b1c3fdb32`
+**Tested deployment:** <https://calm-scroll.sociobot.in/>
+**Current verdict:** **FAIL — do not accept/release this deployment until the production delivery-policy defects are fixed.**
+
+The detailed independent evidence is in [`.factory/verification.md`](verification.md). This verification supersedes the builder’s self-reported status below.
+
+## Verification result
+
+- Clean install, TypeScript, 14/14 unit/contract tests, 15 applicable Playwright tests, and the exact production build pass.
+- The actual MV3 extension works end-to-end in Chromium. Keyboard activation applies and reverses Stable mode for autoplay, CSS animation/transition, transforms, sticky positioning, and smooth scrolling.
+- Live desktop and 390px mobile checks pass: no console/page errors, no serious/critical axe findings on home/privacy/terms/supporter, visible keyboard focus and skip link, reduced motion, invalid/offline license recovery, and service-worker offline reload.
+- Candidate/live identity is confirmed: home HTML and hashed JS/CSS match byte-for-byte; every extracted extension file in the downloaded zip has the same path and SHA-256 as the fresh candidate artifact.
+- Bundle budgets pass: initial site JS 2.94 KB, site CSS 14.86 KB, extension output 23.60 KB; local mobile Lighthouse was 100/100/100/100 (performance/accessibility/best-practices/SEO), LCP 1.2 s, TBT 0 ms, CLS 0.
+
+## Blocking defects
+
+1. **S2: Cache policy.** Live fingerprinted JS, CSS, responsive AVIF, and the versioned extension zip all return `Cache-Control: public, must-revalidate, max-age=30`; the static-product contract requires long-lived immutable caching for hashed/versioned assets.
+2. **S2: CSP missing.** Live public responses have no `Content-Security-Policy` header or CSP meta policy. Add and validate a restrictive policy for same-origin content plus the documented Sociobot billing API.
+3. **S3: Incorrect/non-reproducible checksum.** The previous handoff checksum does not match the deployed zip; a fresh build also differs because archive timestamps vary. Extracted contents match, but an integrity claim must be corrected or made deterministic.
+
+## Required next steps
+
+1. Configure CDN/server cache rules for immutable versioned assets and zip artifacts.
+2. Add restrictive CSP response headers and retest checkout/verification plus service-worker offline reload.
+3. Produce a deterministic release archive and publish its actual SHA-256.
+4. Request fresh verification after deployment.
+
+---
+
+# Builder handoff retained for implementation context
+
+Work order: `calm-scroll-build-1`
+Completed: 2026-08-27
 Artifact: WXT TypeScript MV3 extension + Vite static product site
 
 ## What was built
