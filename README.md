@@ -46,9 +46,9 @@ npm run build        # clean reproducible build
 npm run check        # typecheck, test, and build
 ```
 
-`npm run build:site` is also standalone: it builds the extension, writes the static site to `dist/site/`, and places the installable zip plus its SHA-256 sidecar at `dist/site/downloads/calm-scroll-chrome-v1.0.0.zip` and `dist/site/downloads/calm-scroll-chrome-v1.0.0.zip.sha256`.
+`npm run build:site` is also standalone: it builds the extension, writes the static site to `dist/site/`, and places the installable zip plus its SHA-256 sidecar at `dist/site/downloads/calm-scroll-chrome-v1.0.0.zip` and `dist/site/downloads/calm-scroll-chrome-v1.0.0.zip.sha256`. It also writes `dist/site/release.json`, which records the exact Git commit and archive checksum used for the deployment.
 
-`npm run test:package` runs two clean builds and fails unless the ZIP SHA-256 is identical. After deployment, `npm run test:live` verifies the CSP, Permissions-Policy, immutable asset/download caching, service-worker revalidation, and the published ZIP checksum (set `LIVE_URL` to target another environment).
+`npm run test:package` runs three clean builds and fails unless the ZIP bytes and lexical central-directory order are identical; it also verifies that the release identity names the current commit and ZIP checksum. After deployment, `npm run test:live` verifies the CSP, Permissions-Policy, immutable asset/download caching, service-worker revalidation, release identity, and the published ZIP checksum (set `LIVE_URL` to target another environment). Set `EXPECTED_RELEASE_SHA` to require an exact deployed commit match.
 
 Playwright downloads its pinned Chromium on first setup if the browser is not already installed:
 

@@ -48,8 +48,20 @@ if (!/^[a-f0-9]{64}$/.test(expectedChecksum) || expectedChecksum !== actualCheck
   throw new Error(`Published ZIP checksum mismatch: expected ${expectedChecksum}, got ${actualChecksum}`);
 }
 
+const release = await (await request('/release.json')).json();
+if (!/^[a-f0-9]{40}$/.test(release.source_commit ?? '')) {
+  throw new Error(`Live release identity has an invalid source_commit: ${release.source_commit}`);
+}
+if (release.extension?.path !== zipPath || release.extension?.sha256 !== actualChecksum) {
+  throw new Error('Live release identity does not match the published extension archive');
+}
+const expectedRelease = process.env.EXPECTED_RELEASE_SHA;
+if (expectedRelease && release.source_commit !== expectedRelease) {
+  throw new Error(`Live release commit mismatch: ${release.source_commit} != ${expectedRelease}`);
+}
+
 const serviceWorker = await request('/sw.js');
 const swCache = header(serviceWorker, 'cache-control');
 if (/\bimmutable\b/i.test(swCache)) throw new Error(`/sw.js must revalidate, received ${swCache}`);
 
-console.log(`Live delivery policy and ZIP checksum pass: ${origin} (${actualChecksum})`);
+console.log(`Live delivery policy, identity, and ZIP checksum pass: ${origin} (${release.source_commit}, ${actualChecksum})`);

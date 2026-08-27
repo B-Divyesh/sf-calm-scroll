@@ -35,7 +35,8 @@ test('the MV3 popup freezes a real page and remembers the site', async ({}, test
     await popup.goto(`chrome-extension://${extensionId}/popup.html`);
     await expect(popup.locator('#hostname')).toHaveText('127.0.0.1');
     await expect(popup.locator('#motion-total')).not.toHaveText('0');
-    await popup.locator('#stable-toggle').click();
+    await popup.locator('#stable-toggle').focus();
+    await popup.locator('#stable-toggle').press('Space');
     await expect(popup.locator('#stable-toggle')).toHaveAttribute('aria-checked', 'true');
 
     await expect.poll(() => page.locator('.animated').evaluate((element) => getComputedStyle(element).animationName)).toBe('none');

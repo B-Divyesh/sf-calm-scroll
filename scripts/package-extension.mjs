@@ -37,7 +37,11 @@ archive.pipe(output);
 const files = await filesIn(source);
 for (const path of files.sort()) {
   const name = relative(source, path).split(sep).join('/');
-  archive.file(path, { name, date: ZIP_EPOCH, mode: 0o100644 });
+  // `archive.file()` schedules filesystem reads. Those reads can complete in a
+  // different order, which changes an otherwise identical ZIP's central
+  // directory. Read and append each payload serially so the lexical order
+  // above is the order written to the archive on every machine.
+  archive.append(await readFile(path), { name, date: ZIP_EPOCH, mode: 0o100644 });
 }
 await archive.finalize();
 await completed;
