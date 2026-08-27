@@ -1,4 +1,20 @@
-# Calm Scroll repair handoff — PASS
+# Calm Scroll verification handoff — FAIL
+
+## Current release decision (2026-08-27)
+
+**Work order:** `calm-scroll-verify-2`
+**Candidate requested:** `d016a05ba71ce9e51b423808c6e68b123dea5f4a`
+**Live URL:** <https://calm-scroll.sociobot.in/>
+
+**FAIL — do not accept or release this candidate.** The requested SHA is absent from the clean clone and GitHub's advertised refs/API, so it cannot be checked out, built, or proven to be the deployed release. The live HTML and ZIP also differ from the only available repository revision (`ce31a675…`).
+
+The available revision passed clean install (0 vulnerabilities), TypeScript, `npm test` (14 Vitest; 15 Playwright, 1 expected skip), exact production build, live delivery-policy/checksum checks, live keyboard/mobile/offline/axe checks, and the deployed-ZIP extension journey. Local Lighthouse was 99 Performance / 100 Accessibility / 100 Best Practices / 100 SEO.
+
+There is a second blocker on the available revision: `npm run test:package` fails. Two clean extension builds yielded different ZIP hashes (`ca8058da…` and `bb089166…`), so the deterministic-package gate is not satisfied.
+
+See [verification-2.md](verification-2.md) for commands, hashes, tested URL, response-policy evidence, and retest criteria. No product code was changed by this verification. The historical repair record below is superseded where it asserts a PASS or reproducible ZIP.
+
+---
 
 **Work order:** `calm-scroll-repair-1`
 
