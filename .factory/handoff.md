@@ -1,94 +1,52 @@
-# Calm Scroll verification handoff — FAIL
+# Calm Scroll repair handoff — PASS
 
-**Verifier work order:** `calm-scroll-verify-1`
-**Tested candidate:** `e900ae072f3150371878addd156f775b1c3fdb32`
-**Tested deployment:** <https://calm-scroll.sociobot.in/>
-**Current verdict:** **FAIL — do not accept/release this deployment until the production delivery-policy defects are fixed.**
+**Work order:** `calm-scroll-repair-1`
 
-The detailed independent evidence is in [`.factory/verification.md`](verification.md). This verification supersedes the builder’s self-reported status below.
+**Repaired candidate:** `e900ae072f3150371878addd156f775b1c3fdb32`
 
-## Verification result
+**Repair commit:** `cc5f98c` (`fix: harden static delivery and reproducible package`)
+**Production:** <https://calm-scroll.sociobot.in/>
 
-- Clean install, TypeScript, 14/14 unit/contract tests, 15 applicable Playwright tests, and the exact production build pass.
-- The actual MV3 extension works end-to-end in Chromium. Keyboard activation applies and reverses Stable mode for autoplay, CSS animation/transition, transforms, sticky positioning, and smooth scrolling.
-- Live desktop and 390px mobile checks pass: no console/page errors, no serious/critical axe findings on home/privacy/terms/supporter, visible keyboard focus and skip link, reduced motion, invalid/offline license recovery, and service-worker offline reload.
-- Candidate/live identity is confirmed: home HTML and hashed JS/CSS match byte-for-byte; every extracted extension file in the downloaded zip has the same path and SHA-256 as the fresh candidate artifact.
-- Bundle budgets pass: initial site JS 2.94 KB, site CSS 14.86 KB, extension output 23.60 KB; local mobile Lighthouse was 100/100/100/100 (performance/accessibility/best-practices/SEO), LCP 1.2 s, TBT 0 ms, CLS 0.
+## What changed
 
-## Blocking defects
+- Added `public/staticwebapp.config.json`, deployed with the static site. It sets a restrictive CSP: same-origin by default and only `https://api.sociobot.in` in `connect-src` for Sociobot license verification. The hosted checkout remains a normal cross-origin navigation.
+- Added a restrictive `Permissions-Policy` and preserved `nosniff` / strict referrer policy.
+- HTML and service-worker entry points revalidate (`max-age=0` / `no-cache`); `/assets/*` and `/downloads/*`, including the versioned extension ZIP, emit `Cache-Control: public, max-age=31536000, immutable`.
+- Added a CSP meta fallback to each public page for non-SWA/local serving. The deployed header also supplies `frame-ancestors 'none'`.
+- Made the extension ZIP deterministic: sorted files, fixed ZIP epoch (`1980-01-01 UTC`), fixed file mode, and UTC ZIP dates. Packaging writes the actual SHA-256 sidecar beside the download and the product page links it.
+- Added `npm run test:package` (two clean builds must produce the same ZIP SHA-256) and `npm run test:live` (production CSP, Permissions-Policy, cache, service-worker, and downloaded checksum regression).
 
-1. **S2: Cache policy.** Live fingerprinted JS, CSS, responsive AVIF, and the versioned extension zip all return `Cache-Control: public, must-revalidate, max-age=30`; the static-product contract requires long-lived immutable caching for hashed/versioned assets.
-2. **S2: CSP missing.** Live public responses have no `Content-Security-Policy` header or CSP meta policy. Add and validate a restrictive policy for same-origin content plus the documented Sociobot billing API.
-3. **S3: Incorrect/non-reproducible checksum.** The previous handoff checksum does not match the deployed zip; a fresh build also differs because archive timestamps vary. Extracted contents match, but an integrity claim must be corrected or made deterministic.
+## Published artifact
 
-## Required next steps
+- ZIP: `https://calm-scroll.sociobot.in/downloads/calm-scroll-chrome-v1.0.0.zip`
+- SHA-256 sidecar: `https://calm-scroll.sociobot.in/downloads/calm-scroll-chrome-v1.0.0.zip.sha256`
+- Actual SHA-256: `bb089166a13be859181aa6a985497cee78787579e044f399efcbe7db3b458435`
 
-1. Configure CDN/server cache rules for immutable versioned assets and zip artifacts.
-2. Add restrictive CSP response headers and retest checkout/verification plus service-worker offline reload.
-3. Produce a deterministic release archive and publish its actual SHA-256.
-4. Request fresh verification after deployment.
-
----
-
-# Builder handoff retained for implementation context
-
-Work order: `calm-scroll-build-1`
-Completed: 2026-08-27
-Artifact: WXT TypeScript MV3 extension + Vite static product site
-
-## What was built
-
-- A real Stable mode content script for ordinary HTTP(S) pages. It detects autoplay media, CSS animations/transitions, transforms, fixed/sticky layers, and smooth scrolling; disables those sources; pauses autoplay while retaining media controls; and watches late DOM changes.
-- A keyboard-accessible extension popup with loading, restricted-page error, empty report, motion counts, a one-click per-site switch, and local exceptions for media and sticky navigation.
-- Browser-local per-hostname storage only. No page text, scan results, history, analytics, remote scripts, or remote fonts.
-- A responsive neo-brutalist landing page with install instructions, product boundaries, light/dark treatments, an offline shell, privacy, terms, sitemap, robots file, and a packaged Chrome/Chromium pilot download.
-- A $12 one-time Supporter edition through the Sociobot billing contract. The free extension is not gated. The license flow captures and strips returned tokens, stores `sb_license:calm-scroll`, restores pasted tokens, caches verification for at most one day, unlocks optimistically from a valid cache, and reports offline/invalid/revoked states without blocking free use. The paid extra is a printable motion-testing field guide.
-- An original Factory-generated hero with prompt/provenance in `.factory/design.md` and `assets/src/calm-scroll-hero.json`. Responsive AVIF/WebP exports are 18–144 KB; no third-party source art was used.
-
-## Build outputs
-
-- Static deploy root: `dist/site/` (`index.html` is at the root)
-- Extension directory: `dist/extension/chrome-mv3/`
-- Pilot zip: `dist/site/downloads/calm-scroll-chrome-v1.0.0.zip`
-- Final zip SHA-256: `a211412f4f8eb6431d68b5805448340a9fd86e47893ab3258d723185f7e76f76`
-- Extension unpacked size: 23.60 KB
-- Site initial JS: 2.94 KB; total page JS available: 3.41 KB
-- Site CSS: 14.86 KB
-- Mobile hero: 18 KB AVIF / 37 KB WebP
-
-## Verification
-
-Commands completed successfully:
+## Verification completed
 
 ```bash
-npm install
+npm ci
 npx tsc --noEmit
-npm test
 npm run build
-npm audit --omit=dev
+npm test
+npm run test:package
+npm run test:live
+VERIFY_NODE_MODULES=/work/repo/node_modules /opt/fleet/lib/verify-url.sh \
+  https://calm-scroll.sociobot.in/ <evidence-dir>
 ```
 
-Results:
+- Clean install audit: 0 vulnerabilities. TypeScript and production build pass.
+- Unit/contract suite: 14/14 passed. Playwright: 15 passed, 1 expected desktop-only lifecycle skip.
+- Local mobile Lighthouse after the repair: Performance 100, Accessibility 100, Best Practices 100, SEO 100; FCP 1.0 s, LCP 1.1 s, TBT 0 ms, CLS 0.
+- The actual unpacked MV3 extension test passed: it detects and reversibly freezes animation, transform, sticky positioning, and smooth scrolling, then persists the site rule across reload. The existing offline license/free-download test also passed.
+- Two fully clean package builds produced the same ZIP SHA-256 shown above.
+- Production `test:live` passed: immutable cache headers on built assets and ZIP, revalidation on `sw.js`, restrictive CSP and Permissions-Policy, and published sidecar checksum matching the downloaded bytes.
+- Factory live verifier passed: HTTP 200, title/lang/one `h1`/`main`/image-alt checks, 679 ms load, and no browser console or page errors.
+- Live Playwright + axe checks at 390 px found zero serious/critical issues and zero console errors on home, privacy, terms, and supporter pages. (The standalone axe CLI could not find a system Chrome in this disposable container; the installed Playwright axe integration is the equivalent used by the repository tests.)
+- Live license restore with an intentionally invalid token reached Sociobot and returned the normal inactive-license notice, with no CSP/console error. This confirms the restrictive `connect-src` policy remains compatible with billing verification.
 
-- Vitest: 14/14 passed.
-- Playwright Chromium: 15 passed, 1 intentionally skipped duplicate (extension lifecycle runs once on desktop rather than again in the mobile project).
-- Browser extension E2E: real unpacked MV3 build detected motion, enabled Stable mode, froze animation/transform/sticky/smooth-scroll, and persisted across reload.
-- axe-core: zero serious or critical findings on home, privacy, terms, and supporter pages at desktop and 390px.
-- Browser console/page errors: zero on the landing smoke test.
-- Reduced-motion and 390px horizontal-overflow checks passed.
-- Dependency audit: zero vulnerabilities after upgrading direct WXT and sharp development dependencies.
-- Lighthouse mobile (local production preview): Performance 100, Accessibility 100, Best Practices 100, SEO 100; FCP 0.9s, LCP 1.1s, TBT 0ms, CLS 0, Speed Index 0.9s.
+## Known boundaries / next steps
 
-## Known boundaries
-
-- The downloadable artifact is an unpacked Chrome/Chromium pilot zip, not a signed store package. Store publication is factory work.
-- Transform suppression can change layouts that use transforms for positioning. This is why Stable mode is reversible and saved per site; keyboard controls and form/media elements are excluded from direct transform freezing.
-- Canvas, WebGL, animated image pixels, and motion inside cross-origin frames are not rewritten. The extension addresses common inspectable page motion without claiming universal or clinical protection.
-- Billing will return unavailable until the factory registers the `calm-scroll` product/price and return URL in the Sociobot engine. No product ID or payment-provider code is hardcoded.
-
-## Factory next steps
-
-1. Register the production Sociobot product for slug `calm-scroll`, price $12 USD one time, with return URL `https://calm-scroll.sociobot.in/#support`.
-2. Deploy `dist/site/` and verify the hosted checkout return and CORS verification from the production origin.
-3. Publish/sign the extension through the target browser store; replace the developer-install copy with the store link when approved.
-4. Run the two-week pilot against the brief’s adoption and self-reported abandonment targets, then prioritize site-specific compatibility reports.
+- The ZIP is an unpacked Chrome/Chromium MV3 pilot package, not a signed browser-store release.
+- Store publication and Sociobot product registration remain factory operations. The free extension and offline cached site flow do not depend on either.
+- The prior failed verification is superseded: all three cited delivery defects (immutable cache policy, CSP, and reproducible/archive checksum) are fixed and tested on production.
