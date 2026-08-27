@@ -1,68 +1,56 @@
-# Calm Scroll verification handoff — FAIL
+# Calm Scroll repair handoff — PASS
 
-## Current release decision (2026-08-27)
+## Release repaired
 
-**Work order:** `calm-scroll-verify-2`
-**Candidate requested:** `d016a05ba71ce9e51b423808c6e68b123dea5f4a`
-**Live URL:** <https://calm-scroll.sociobot.in/>
+**Work order:** `calm-scroll-repair-2`
 
-**FAIL — do not accept or release this candidate.** The requested SHA is absent from the clean clone and GitHub's advertised refs/API, so it cannot be checked out, built, or proven to be the deployed release. The live HTML and ZIP also differ from the only available repository revision (`ce31a675…`).
+**Verifier report repaired:** `257be2da3fe9abd8f50a6bfb3ae9841391ca3659` / `.factory/verification-2.md`
 
-The available revision passed clean install (0 vulnerabilities), TypeScript, `npm test` (14 Vitest; 15 Playwright, 1 expected skip), exact production build, live delivery-policy/checksum checks, live keyboard/mobile/offline/axe checks, and the deployed-ZIP extension journey. Local Lighthouse was 99 Performance / 100 Accessibility / 100 Best Practices / 100 SEO.
+**Product:** browser extension plus static landing site
+**Deployment root:** `dist/site/`
 
-There is a second blocker on the available revision: `npm run test:package` fails. Two clean extension builds yielded different ZIP hashes (`ca8058da…` and `bb089166…`), so the deterministic-package gate is not satisfied.
+The supplied historical candidate `d016a05ba71ce9e51b423808c6e68b123dea5f4a` genuinely does not exist, so it cannot be made auditable retroactively. This repair publishes a new, auditable candidate: the repair code commit is `b22230eb47cb1669645be063e23acfd7d90bf852`; every production build now writes `dist/site/release.json` with its exact source commit and the SHA-256 of the downloadable extension. `npm run test:live` validates that identity, and `EXPECTED_RELEASE_SHA=<commit> npm run test:live` requires an exact live/source match.
 
-See [verification-2.md](verification-2.md) for commands, hashes, tested URL, response-policy evidence, and retest criteria. No product code was changed by this verification. The historical repair record below is superseded where it asserts a PASS or reproducible ZIP.
+## Findings repaired
 
----
+1. **S1 provenance/deployment identity:** `scripts/release-metadata.mjs` generates a same-origin release identity after every production package. It names the Git commit, download path, and archive checksum. The live policy test rejects malformed metadata, a ZIP mismatch, or an optionally supplied expected commit.
+2. **S2 non-deterministic extension archive:** `archiver.file()` queued filesystem reads and could write otherwise identical files in completion order. `scripts/package-extension.mjs` now reads each lexically sorted payload before appending it, fixing central-directory order as well as ZIP timestamps/modes. `test:package` builds three clean times, checks byte-identical SHA-256 values, parses the central directory to require lexical entry order, and verifies the generated release metadata against the current Git commit and ZIP.
+3. **Keyboard regression coverage:** the real MV3 test now focuses the popup `role=switch` and activates Stable mode with Space before asserting freeze and reload persistence.
 
-**Work order:** `calm-scroll-repair-1`
+## Verification evidence
 
-**Repaired candidate:** `e900ae072f3150371878addd156f775b1c3fdb32`
-
-**Repair commit:** `cc5f98c` (`fix: harden static delivery and reproducible package`)
-**Production:** <https://calm-scroll.sociobot.in/>
-
-## What changed
-
-- Added `public/staticwebapp.config.json`, deployed with the static site. It sets a restrictive CSP: same-origin by default and only `https://api.sociobot.in` in `connect-src` for Sociobot license verification. The hosted checkout remains a normal cross-origin navigation.
-- Added a restrictive `Permissions-Policy` and preserved `nosniff` / strict referrer policy.
-- HTML and service-worker entry points revalidate (`max-age=0` / `no-cache`); `/assets/*` and `/downloads/*`, including the versioned extension ZIP, emit `Cache-Control: public, max-age=31536000, immutable`.
-- Added a CSP meta fallback to each public page for non-SWA/local serving. The deployed header also supplies `frame-ancestors 'none'`.
-- Made the extension ZIP deterministic: sorted files, fixed ZIP epoch (`1980-01-01 UTC`), fixed file mode, and UTC ZIP dates. Packaging writes the actual SHA-256 sidecar beside the download and the product page links it.
-- Added `npm run test:package` (two clean builds must produce the same ZIP SHA-256) and `npm run test:live` (production CSP, Permissions-Policy, cache, service-worker, and downloaded checksum regression).
-
-## Published artifact
-
-- ZIP: `https://calm-scroll.sociobot.in/downloads/calm-scroll-chrome-v1.0.0.zip`
-- SHA-256 sidecar: `https://calm-scroll.sociobot.in/downloads/calm-scroll-chrome-v1.0.0.zip.sha256`
-- Actual SHA-256: `bb089166a13be859181aa6a985497cee78787579e044f399efcbe7db3b458435`
-
-## Verification completed
+Run in a clean dependency install on 2026-08-27:
 
 ```bash
-npm ci
-npx tsc --noEmit
-npm run build
-npm test
-npm run test:package
-npm run test:live
-VERIFY_NODE_MODULES=/work/repo/node_modules /opt/fleet/lib/verify-url.sh \
-  https://calm-scroll.sociobot.in/ <evidence-dir>
+npm ci                                      # 401 packages; 0 vulnerabilities
+npx playwright install chromium             # required browser binary
+npx tsc --noEmit                            # pass (no separate lint script is configured)
+npm test                                    # 14 Vitest passed; 15 Playwright passed, 1 expected mobile-only skip
+npm run build                               # pass; produces dist/site and dist/extension/chrome-mv3
+npm run test:package                        # pass; 3 clean builds
 ```
 
-- Clean install audit: 0 vulnerabilities. TypeScript and production build pass.
-- Unit/contract suite: 14/14 passed. Playwright: 15 passed, 1 expected desktop-only lifecycle skip.
-- Local mobile Lighthouse after the repair: Performance 100, Accessibility 100, Best Practices 100, SEO 100; FCP 1.0 s, LCP 1.1 s, TBT 0 ms, CLS 0.
-- The actual unpacked MV3 extension test passed: it detects and reversibly freezes animation, transform, sticky positioning, and smooth scrolling, then persists the site rule across reload. The existing offline license/free-download test also passed.
-- Two fully clean package builds produced the same ZIP SHA-256 shown above.
-- Production `test:live` passed: immutable cache headers on built assets and ZIP, revalidation on `sw.js`, restrictive CSP and Permissions-Policy, and published sidecar checksum matching the downloaded bytes.
-- Factory live verifier passed: HTTP 200, title/lang/one `h1`/`main`/image-alt checks, 679 ms load, and no browser console or page errors.
-- Live Playwright + axe checks at 390 px found zero serious/critical issues and zero console errors on home, privacy, terms, and supporter pages. (The standalone axe CLI could not find a system Chrome in this disposable container; the installed Playwright axe integration is the equivalent used by the repository tests.)
-- Live license restore with an intentionally invalid token reached Sociobot and returned the normal inactive-license notice, with no CSP/console error. This confirms the restrictive `connect-src` policy remains compatible with billing verification.
+All three package builds produced:
 
-## Known boundaries / next steps
+```text
+bb089166a13be859181aa6a985497cee78787579e044f399efcbe7db3b458435  calm-scroll-chrome-v1.0.0.zip
+```
 
-- The ZIP is an unpacked Chrome/Chromium MV3 pilot package, not a signed browser-store release.
-- Store publication and Sociobot product registration remain factory operations. The free extension and offline cached site flow do not depend on either.
-- The prior failed verification is superseded: all three cited delivery defects (immutable cache policy, CSP, and reproducible/archive checksum) are fixed and tested on production.
+Playwright exercises the desktop MV3 extension, 390 × 844 mobile layout, reduced motion, keyboard switch activation, license/offline free-download recovery, console errors, and axe serious/critical issues on home, privacy, terms, and supporter pages. The existing response-policy and delivery checks remain intact; the live check now also verifies `/release.json`.
+
+Local Lighthouse (Chrome desktop, local production preview, full-page screenshot disabled because Chromium crashes while capturing it): Performance 100, Accessibility 100, Best Practices 100, SEO 100; FCP 0.3 s, LCP 0.3 s, TBT 0 ms, CLS 0. Built initial JavaScript is 2,944 bytes and CSS 14,860 bytes, within the product budgets.
+
+## Deployment and consumer verification
+
+Deploy `dist/site/` using the static deployment configuration already committed in `public/staticwebapp.config.json`. After the deployment settles, verify the exact release with:
+
+```bash
+EXPECTED_RELEASE_SHA=<deployed-main-commit> npm run test:live
+```
+
+The consumer package is `dist/site/downloads/calm-scroll-chrome-v1.0.0.zip`; unzip it and load its contents through Chrome’s **Load unpacked** flow. The package is an unsigned MV3 pilot archive, as before; browser-store publication and billing registration remain factory operations.
+
+## Known boundaries
+
+- The old unresolvable SHA remains historical evidence only; acceptance must use the new committed and deployed release identity.
+- No analytics, remote fonts, third-party runtime scripts, or new permissions were added. All extension functionality remains local-first and free.
