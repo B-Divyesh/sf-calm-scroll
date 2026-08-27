@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light" />
+    <title>Calm Scroll controls</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to controls</a>
+    <header class="masthead">
+      <div class="mark" aria-hidden="true"><span></span></div>
+      <div>
+        <p class="eyebrow">Motion control</p>
+        <h1>Calm Scroll</h1>
+      </div>
+      <span class="version">V1</span>
+    </header>
+
+    <main id="main">
+      <section id="loading" class="state-panel" aria-live="polite">
+        <span class="scan-mark" aria-hidden="true"></span>
+        <p><strong>Inspecting this page…</strong><br />Checking visible motion sources.</p>
+      </section>
+
+      <section id="error" class="state-panel is-error" hidden aria-live="assertive">
+        <p><strong>This page can’t be adjusted.</strong><br /><span id="error-detail">Browser settings and internal pages block extensions.</span></p>
+        <button id="retry" class="small-button" type="button">Try again</button>
+      </section>
+
+      <div id="controls" hidden>
+        <p class="site-line">This site <strong id="hostname">—</strong></p>
+
+        <section class="master-control" aria-labelledby="stable-label">
+          <div>
+            <p class="control-number">01 / STABILITY</p>
+            <h2 id="stable-label">Stable mode</h2>
+            <p id="stable-description">Motion is allowed on this site.</p>
+          </div>
+          <button id="stable-toggle" class="toggle" type="button" role="switch" aria-checked="false" aria-describedby="stable-description">
+            <span class="toggle-track" aria-hidden="true"><span></span></span>
+            <span class="toggle-label">Turn on</span>
+          </button>
+        </section>
+
+        <section class="motion-budget" aria-labelledby="budget-title">
+          <div class="section-heading">
+            <div>
+              <p class="control-number">02 / INSPECTION</p>
+              <h2 id="budget-title">Motion found</h2>
+            </div>
+            <strong id="motion-total" class="count">0</strong>
+          </div>
+          <p id="empty-report" class="quiet-state" hidden>No obvious motion is active right now. Stable mode can still prevent motion added later.</p>
+          <ul id="report-list" class="report-list">
+            <li><span>Autoplay media</span><strong id="autoplay-count">0</strong></li>
+            <li><span>Animations / transitions</span><strong id="animation-count">0</strong></li>
+            <li><span>Moving transforms</span><strong id="transform-count">0</strong></li>
+            <li><span>Fixed / sticky layers</span><strong id="sticky-count">0</strong></li>
+            <li><span>Smooth scrolling</span><strong id="smooth-count">No</strong></li>
+          </ul>
+        </section>
+
+        <fieldset id="exceptions" class="exceptions" disabled>
+          <legend><span class="control-number">03 / SITE EXCEPTIONS</span> Keep what you need</legend>
+          <label><input id="allow-media" type="checkbox" /> <span><strong>Allow media playback</strong><small>Videos and audio keep their own controls.</small></span></label>
+          <label><input id="keep-sticky" type="checkbox" /> <span><strong>Keep fixed and sticky layers</strong><small>Useful when a site’s navigation must stay visible.</small></span></label>
+        </fieldset>
+
+        <p id="saved-message" class="saved-message" role="status" aria-live="polite"></p>
+      </div>
+    </main>
+
+    <footer>
+      <a href="https://calm-scroll.sociobot.in/#how-it-works" target="_blank" rel="noreferrer">How it works</a>
+      <span>Saved only in this browser</span>
+    </footer>
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>
