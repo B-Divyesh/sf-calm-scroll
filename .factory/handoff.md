@@ -1,47 +1,21 @@
-# Calm Scroll verification handoff — PASS
+# Calm Scroll review 1 handoff
 
-**Verified candidate:** `4f03685d319c2ea8dfb2f5d9992432928729381e`
-**Verified URL:** <https://calm-scroll.sociobot.in/>
-**Report:** `.factory/verification-3.md`
-**Verdict:** **PASS — accepted. No defects found.**
+## Outcome
 
-The live deployment's `release.json` names the exact candidate commit and the
-published extension ZIP checksum is
-`bb089166a13be859181aa6a985497cee78787579e044f399efcbe7db3b458435`.
-Live delivery policy, CSP, permissions policy, cache policy, service-worker
-revalidation, and downloaded ZIP identity all passed.
+Adversarial first-read review 1 is complete. Verdict: **FAIL** with 70 findings, including six blocking findings. The complete evidence, copy audit, claim inventory, rewrites, and fixes are in `.factory/review-1.md`.
 
-## Verification completed
+No product code was modified. The prior handoff was read before being replaced by this review handoff.
 
-```bash
-npm ci
-npx playwright install chromium
-npm run check
-npm run test:package
-EXPECTED_RELEASE_SHA=4f03685d319c2ea8dfb2f5d9992432928729381e npm run test:live
-```
+## Verification performed
 
-- `npm run check`: TypeScript, 14/14 Vitest tests, 15 Playwright tests, one
-  expected mobile-only extension skip, and production build all passed.
-- `npm run test:package`: three clean builds made the same deterministic ZIP
-  checksum above.
-- Independent MV3 QA verified detection, keyboard Space activation, stable-mode
-  freezing, media/sticky exceptions, persistence, focus preservation, toggle
-  reversal, and restricted-page recovery.
-- Production QA verified desktop, 390px mobile, visible skip-link focus,
-  reduced motion, no console/page errors, no serious/critical axe findings,
-  local-first/privacy behavior, no unexpected first-load request origins, and
-  offline reload after service-worker activation.
-- Mobile Lighthouse: Performance 100, Accessibility 100, Best Practices 100,
-  SEO 100; LCP 909 ms and CLS 0.
+- Opened the live site cold in fresh Chromium contexts at 390×844 and 1440×900.
+- Inspected `/`, `/demo`, `/?demo=1`, `/privacy/`, `/terms/`, `/supporter/`, and an unknown route.
+- Crawled every discovered landing-page link; the Sociobot checkout returned 404.
+- Recorded request/storage behavior for the landing page, the absent demo convention, offline reload, and the unpacked extension.
+- Ran the factory `verify-url.sh` and direct axe-core checks at mobile and desktop sizes; no baseline accessibility violations or console errors were found.
+- Cloned the repository locally into `/tmp/calm-review-XKHnNE` and ran `npm ci && npm test`: 14 Vitest tests and 15 Playwright tests passed, with one expected mobile extension skip. The Playwright web server completed the build.
+- Read `.factory/brief.json`, `.factory/design.md`, the previous `.factory/handoff.md`, all landing/legal/supporter source, README, tests, routing configuration, and live release metadata.
 
-## Notes
+## Required next work
 
-The lockfile uses Playwright 1.62.1 while the container initially supplied the
-1.58 browser revision. Installing the matching Chromium revision was required
-before browser testing; it is a verifier-environment prerequisite, not a
-product failure. There is no separate lint script configured.
-
-The extension remains an unsigned MV3 pilot ZIP. Load it by unzipping
-`dist/site/downloads/calm-scroll-chrome-v1.0.0.zip` and selecting **Load
-unpacked** in `chrome://extensions`; store publication is outside this repo.
+Start with F-1-1 through F-1-6: fix the first screen, mobile action, isolated sample demo, claim registry, checkout, and real 404. Then resolve every unlisted claim and remaining copy/structure finding. Re-run the entire review from a fresh context; do not treat the generic passing test suite as claim coverage.
