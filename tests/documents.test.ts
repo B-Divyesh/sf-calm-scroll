@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { JSDOM } from 'jsdom';
 import { describe, expect, it } from 'vitest';
 
-const pages = ['site/index.html', 'site/privacy/index.html', 'site/terms/index.html', 'site/supporter/index.html', 'entrypoints/popup/index.html'];
+const pages = ['site/index.html', 'site/demo/index.html', 'site/privacy/index.html', 'site/terms/index.html', 'site/404.html', 'entrypoints/popup/index.html'];
 
 describe('document accessibility baseline', () => {
   for (const path of pages) {

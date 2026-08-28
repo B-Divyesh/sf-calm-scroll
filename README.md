@@ -1,79 +1,45 @@
 # Calm Scroll
 
-Calm Scroll is a local-first browser extension for people who find parallax, autoplay, animated scrolling, sticky motion, and other page movement uncomfortable. One switch creates a stable reading mode; a plain motion report and per-site exceptions keep the intervention visible and reversible.
+Calm Scroll is a browser extension for people who find page motion uncomfortable.
+It reports common page motion and offers a reversible Stable mode per site.
 
-It is a page-motion utility, not a reader mode, ad blocker, medical device, or treatment. Comfort outcomes are personal and user-reported.
+Try the isolated sample at <https://calm-scroll.sociobot.in/demo/>. The demo works on any device. Install the extension on desktop Chrome or Chromium.
 
-## What v1 does
+## What it does
 
-- Detects autoplay media, CSS animation/transition, transforms, fixed/sticky layers, and smooth scrolling.
-- Stops animations and smooth scrolling, pauses autoplay without removing media controls, releases sticky layers, and freezes transformed offenders.
-- Watches for motion added after initial page load.
-- Reports motion counts in the popup.
-- Stores Stable mode, “allow media,” and “keep fixed/sticky layers” choices per hostname in browser-local storage.
-- Leaves keyboard focus and native media controls available.
-- Handles restricted browser pages with a clear, retryable error state.
+- Reports autoplay media, animations, transforms, sticky layers, and smooth scrolling.
+- Applies Stable mode with optional media and sticky-layer exceptions.
+- Saves extension choices in browser-local extension storage.
+- Exports or imports site settings as a local JSON file.
 
-The optional $12 Supporter edition funds maintenance and unlocks a printable motion-testing field guide. Every extension motion-control and accessibility feature remains free.
+Calm Scroll is not a reader mode, ad blocker, medical device, or treatment.
 
-## Stack and layout
+## Run and verify
 
-- WXT + TypeScript, Chrome Manifest V3 extension
-- Vite + vanilla TypeScript static landing site
-- Vitest for unit/contract tests
-- Playwright + axe-core for real-browser, 390px, extension lifecycle, console, and accessibility checks
-
-Key paths:
-
-- `entrypoints/` — MV3 content script, popup, and local service worker
-- `src/core/` — motion scan and per-site rule logic
-- `site/` — landing, privacy, terms, Supporter field guide, and license flow
-- `assets/src/` — original generated hero source and prompt metadata
-- `.factory/design.md` — product-specific visual system and asset provenance
-- `dist/site/` — static deployment root after build
-- `dist/extension/chrome-mv3/` — unpacked extension build
-
-## Develop and verify
-
-Requires Node.js 22+ and npm.
+Node.js 22+ and npm are required.
 
 ```bash
-npm install
-npm run dev          # WXT extension development
-npm run dev:site     # landing site at the printed local URL
-npm test             # unit + Chromium + axe + 390px + unpacked-extension tests
-npm run build        # clean reproducible build
-npm run check        # typecheck, test, and build
-```
-
-`npm run build:site` is also standalone: it builds the extension, writes the static site to `dist/site/`, and places the installable zip plus its SHA-256 sidecar at `dist/site/downloads/calm-scroll-chrome-v1.0.0.zip` and `dist/site/downloads/calm-scroll-chrome-v1.0.0.zip.sha256`. It also writes `dist/site/release.json`, which records the exact Git commit and archive checksum used for the deployment.
-
-`npm run test:package` runs three clean builds and fails unless the ZIP bytes and lexical central-directory order are identical; it also verifies that the release identity names the current commit and ZIP checksum. After deployment, `npm run test:live` verifies the CSP, Permissions-Policy, immutable asset/download caching, service-worker revalidation, release identity, and the published ZIP checksum (set `LIVE_URL` to target another environment). Set `EXPECTED_RELEASE_SHA` to require an exact deployed commit match.
-
-Playwright downloads its pinned Chromium on first setup if the browser is not already installed:
-
-```bash
+npm ci
 npx playwright install chromium
+npm test
+npm run build
 ```
 
-## Install the extension build
+`npm run build` creates `dist/site/` and the unpacked extension in `dist/extension/chrome-mv3/`. The desktop install ZIP is in `dist/site/downloads/`.
 
-1. Run `npm run build` and unzip `dist/site/downloads/calm-scroll-chrome-v1.0.0.zip`.
-2. Open `chrome://extensions`, turn on Developer mode, and choose **Load unpacked**.
-3. Select the unzipped directory and pin Calm Scroll.
-4. Open an ordinary `http` or `https` page, select the extension, inspect its motion count, and turn on Stable mode.
+Each public claim is listed in `.factory/claims.json`. Run one claim with its listed command or run all checks with `npm test`.
 
-Chrome internal pages and browser stores do not allow content-script changes. The popup explains this rather than silently failing.
+## Install on desktop Chrome or Chromium
 
-## Privacy and billing
+1. Build the project and unzip `dist/site/downloads/calm-scroll-chrome-v1.0.0.zip`.
+2. Open `chrome://extensions` and turn on Developer mode.
+3. Choose **Load unpacked**, select the unzipped folder, and pin Calm Scroll.
 
-There is no analytics, tracking, remote font, or runtime CDN. The extension stores only per-hostname settings locally; it does not send browsing history, page text, scan results, or form data anywhere. See the shipped [`/privacy`](https://calm-scroll.sociobot.in/privacy/) and [`/terms`](https://calm-scroll.sociobot.in/terms/) pages.
+## Privacy and deployment
 
-Supporter checkout and license verification use only the Sociobot billing API. The checkout URL is slug-based—no provider or product ID is embedded. A returned or pasted token is stored as `sb_license:calm-scroll`, stripped from the URL, verified no more than daily, and never blocks the free experience while offline.
+The site has no analytics, remote font, or runtime CDN scripts. See the deployed [Privacy](https://calm-scroll.sociobot.in/privacy/) and [Terms](https://calm-scroll.sociobot.in/terms/) pages.
 
-## Deployment
-
-Deploy `dist/site/` as the static root. Its committed `staticwebapp.config.json` sets a restrictive same-origin CSP (with only the Sociobot verification API in `connect-src`), a restrictive Permissions-Policy, one-year immutable caching for `/assets/*` and versioned downloads, and revalidation for HTML/service-worker entry points. Legal pages, a small offline service worker, sitemap, robots file, responsive images, and extension download are included. Infrastructure, DNS, billing registration, and store publication are intentionally outside this repository.
+Deploy `dist/site/` as a static site. `public/staticwebapp.config.json` supplies the static-host headers and styled 404 response.
 
 ## License
 

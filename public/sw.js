@@ -1,5 +1,5 @@
-const CACHE = 'calm-scroll-site-v1';
-const SHELL = ['/', '/privacy/', '/terms/', '/supporter/', '/assets/calm-scroll-hero-768.webp', '/assets/favicon.svg'];
+const CACHE = 'calm-scroll-site-v2';
+const SHELL = ['/', '/demo/', '/privacy/', '/terms/', '/404.html', '/assets/calm-scroll-hero-768.webp', '/assets/favicon.svg'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(SHELL)));

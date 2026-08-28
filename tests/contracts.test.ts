@@ -2,12 +2,12 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
 describe('product contracts', () => {
-  it('keeps license verification non-blocking and product-scoped', () => {
+  it('keeps demo storage isolated and registers offline support', () => {
     const source = readFileSync('site/src/main.ts', 'utf8');
-    expect(source).toContain("sb_license:${PRODUCT}");
-    expect(source).toContain('/verify?license=');
-    expect(source).toContain('history.replaceState');
-    expect(source).toContain('24 * 60 * 60 * 1000');
+    const demo = readFileSync('site/src/demo.ts', 'utf8');
+    expect(demo).toContain("demo:calm-scroll:sample");
+    expect(demo).toContain('localStorage.removeItem(KEY)');
+    expect(source).toContain("navigator.serviceWorker.register('/sw.js')");
   });
 
   it('injects a stable mode that covers all declared motion sources', () => {

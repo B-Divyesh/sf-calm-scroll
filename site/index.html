@@ -4,161 +4,42 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#FFD447" />
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://api.sociobot.in; media-src 'self'; manifest-src 'self'; worker-src 'self'; form-action 'self'; upgrade-insecure-requests" />
-    <meta name="description" content="Calm Scroll is a local-first browser extension that freezes parallax, autoplay, animated scrolling, and other distracting page motion." />
-    <meta property="og:title" content="Calm Scroll — put restless web pages on hold" />
-    <meta property="og:description" content="A one-click stable reading mode with inspectable motion counts and per-site controls." />
-    <title>Calm Scroll — stable reading for restless web pages</title>
+    <meta name="description" content="Stop page motion while you read with local per-site controls for desktop Chrome and Chromium." />
+    <link rel="canonical" href="https://calm-scroll.sociobot.in/" />
+    <meta property="og:title" content="Calm Scroll — Stop page motion while you read" />
+    <meta property="og:description" content="Local controls for page motion on desktop Chrome and Chromium." />
+    <meta property="og:image" content="https://calm-scroll.sociobot.in/assets/calm-scroll-social.svg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Calm Scroll — Stop page motion while you read" />
+    <meta name="twitter:description" content="Local controls for page motion on desktop Chrome and Chromium." />
+    <meta name="twitter:image" content="https://calm-scroll.sociobot.in/assets/calm-scroll-social.svg" />
+    <title>Calm Scroll — Stop page motion while you read</title>
     <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/assets/favicon.svg" />
     <link rel="stylesheet" href="/src/style.css" />
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to main content</a>
-    <header class="site-header">
-      <a class="brand" href="/" aria-label="Calm Scroll home">
-        <span class="brand-mark" aria-hidden="true"><i></i></span>
-        <span>Calm Scroll</span>
-      </a>
-      <nav aria-label="Primary navigation">
-        <a href="#how-it-works">How it works</a>
-        <a href="#support">Supporter edition</a>
-        <a class="nav-download" href="/downloads/calm-scroll-chrome-v1.0.0.zip" download>Download v1</a>
-      </nav>
-    </header>
-
+    <header class="site-header"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"><i></i></span><span>Calm Scroll</span></a><nav aria-label="Main navigation"><a href="/demo/">Demo</a><a href="#install">Install</a><a href="/privacy/">Privacy</a></nav></header>
+    <p id="route-announcement" class="sr-only" aria-live="polite"></p>
     <main id="main">
       <section class="hero" aria-labelledby="hero-title">
-        <div class="hero-copy">
-          <p class="kicker"><span>Utility 01</span> Motion belongs under your control</p>
-          <h1 id="hero-title">Put restless web pages on&nbsp;hold.</h1>
-          <p class="lede">Calm Scroll freezes parallax, autoplay, animated scrolling, and sticky motion—without rewriting the page you came to read.</p>
-          <div class="hero-actions">
-            <a class="button button-primary" href="/downloads/calm-scroll-chrome-v1.0.0.zip" download>Download for Chrome <span aria-hidden="true">↓</span></a>
-            <a class="text-link" href="#install">See 3-step install</a>
-          </div>
-          <p class="microcopy">Free core controls · Chrome / Chromium MV3 · No account · Local settings</p>
+        <div>
+          <p class="kicker">Browser extension for motion-sensitive readers</p>
+          <h1 id="hero-title">Stop page motion while you read.</h1>
+          <p class="lede">For people made uncomfortable by page motion, Calm Scroll pauses autoplay, animation, smooth scrolling, and sticky effects.</p>
+          <div class="hero-actions"><a class="button button-primary" href="/demo/">Try it with sample data</a><a class="text-link desktop-install" href="#install">Install on desktop Chrome or Chromium</a></div>
+          <p class="microcopy">The demo works on any device. The extension installs on desktop Chrome or Chromium. No account. Settings stay in your browser.</p>
         </div>
-        <figure class="hero-figure">
-          <picture>
-            <source type="image/avif" srcset="/assets/calm-scroll-hero-768.avif 768w, /assets/calm-scroll-hero-1280.avif 1280w" sizes="(max-width: 800px) 94vw, 48vw" />
-            <source type="image/webp" srcset="/assets/calm-scroll-hero-768.webp 768w, /assets/calm-scroll-hero-1280.webp 1280w" sizes="(max-width: 800px) 94vw, 48vw" />
-            <img src="/assets/calm-scroll-hero-1280.webp" width="1280" height="853" fetchpriority="high" decoding="async" alt="A mechanical clamp steadies loose web page layers into a single aligned reading frame." />
-          </picture>
-          <figcaption><span>Figure A</span> Motion is inspected, then held—not hidden.</figcaption>
-        </figure>
+        <figure class="hero-figure"><picture><source type="image/avif" srcset="/assets/calm-scroll-hero-768.avif 768w, /assets/calm-scroll-hero-1280.avif 1280w" sizes="(max-width: 800px) 94vw, 48vw" /><source type="image/webp" srcset="/assets/calm-scroll-hero-768.webp 768w, /assets/calm-scroll-hero-1280.webp 1280w" sizes="(max-width: 800px) 94vw, 48vw" /><img src="/assets/calm-scroll-hero-1280.webp" width="1280" height="853" fetchpriority="high" decoding="async" alt="A mechanical clamp steadies loose web page layers into an aligned reading frame." /></picture><figcaption>Calm Scroll reports motion before you choose a change.</figcaption></figure>
       </section>
-
-      <aside class="truth-strip" aria-label="Product boundaries">
-        <span>Not a reader mode</span>
-        <span>Not an ad blocker</span>
-        <span>Not medical treatment</span>
-        <strong>Your page, held still</strong>
-      </aside>
-
-      <section id="how-it-works" class="section split-section" aria-labelledby="how-title">
-        <div class="section-intro">
-          <p class="section-code">CS / 02</p>
-          <h2 id="how-title">A visible motion budget for every site.</h2>
-          <p>Generic reduced-motion preferences are easy for sites to ignore. Calm Scroll checks the page in front of you and shows what it found before you decide.</p>
-        </div>
-        <ol class="process-list">
-          <li>
-            <span class="step-number">01</span>
-            <div><h3>Inspect the page</h3><p>See plain counts for autoplay media, animated elements, transforms, sticky layers, and smooth scrolling.</p></div>
-          </li>
-          <li>
-            <span class="step-number">02</span>
-            <div><h3>Hold it steady</h3><p>One switch pauses autoplay and disables motion, including effects added after the page first loads.</p></div>
-          </li>
-          <li>
-            <span class="step-number">03</span>
-            <div><h3>Keep useful controls</h3><p>Allow media or keep sticky navigation on the sites that need them. Each choice stays on this device.</p></div>
-          </li>
-        </ol>
-      </section>
-
-      <section class="inspection-demo" aria-labelledby="inspection-title">
-        <div class="demo-header">
-          <div><p class="section-code">Live interface specimen</p><h2 id="inspection-title">No mystery switch.</h2></div>
-          <span class="status-stamp">Stable mode / on</span>
-        </div>
-        <div class="demo-grid">
-          <div class="detector-readout">
-            <p>Motion found</p><strong>07</strong><span>on example.page</span>
-          </div>
-          <ul class="sample-report" aria-label="Example motion report">
-            <li><span>Autoplay media</span><strong>1</strong></li>
-            <li><span>Animations / transitions</span><strong>3</strong></li>
-            <li><span>Moving transforms</span><strong>2</strong></li>
-            <li><span>Fixed / sticky layers</span><strong>1</strong></li>
-          </ul>
-          <div class="frozen-note"><span aria-hidden="true">■</span><p><strong>Held still now</strong>The page remains ordinary HTML. Keyboard focus and media controls remain available.</p></div>
-        </div>
-      </section>
-
-      <section id="install" class="section install-section" aria-labelledby="install-title">
-        <div class="section-intro">
-          <p class="section-code">CS / 03</p>
-          <h2 id="install-title">Install the pilot in three steps.</h2>
-          <p>Until the store listing is approved, Chrome labels this a developer install. The zip contains only the reproducible extension build.</p>
-        </div>
-        <ol class="install-list">
-          <li><strong>Download and unzip</strong><span>Save Calm Scroll v1 somewhere you will keep.</span></li>
-          <li><strong>Open extensions</strong><span>Visit <code>chrome://extensions</code> and switch on Developer mode.</span></li>
-          <li><strong>Load unpacked</strong><span>Choose the unzipped folder, then pin Calm Scroll.</span></li>
-        </ol>
-        <div class="install-action">
-          <a class="button button-primary" href="/downloads/calm-scroll-chrome-v1.0.0.zip" download>Get the extension zip</a>
-          <p>Version 1.0.0 · Manifest V3<br /><a href="/downloads/calm-scroll-chrome-v1.0.0.zip.sha256">View this package’s SHA-256 checksum</a></p>
-        </div>
-      </section>
-
-      <section id="support" class="support-section" aria-labelledby="support-title">
-        <div class="support-heading">
-          <p class="section-code">Optional / one time</p>
-          <h2 id="support-title">Keep the controls free. Support the maintenance.</h2>
-          <p>Every motion-control and per-site feature is free. A one-time Supporter edition adds a printable site-testing field guide and a supporter mark here—nothing you need for safer reading is paywalled.</p>
-        </div>
-        <div class="price-panel">
-          <p class="price"><span>$</span>12 <small>USD · once</small></p>
-          <ul>
-            <li>All core extension features remain free</li>
-            <li>Printable motion-testing field guide</li>
-            <li>Funds compatibility updates</li>
-          </ul>
-          <a class="button button-dark" href="https://api.sociobot.in/api/v1/products/calm-scroll/checkout">Buy Supporter edition</a>
-          <p class="merchant-note">Secure hosted checkout. Sociobot / Dodo is the merchant of record and handles refunds.</p>
-        </div>
-        <div class="license-panel">
-          <p class="section-code">Already purchased?</p>
-          <form id="license-form" novalidate>
-            <label for="license-token">Paste your license token</label>
-            <div class="license-row">
-              <input id="license-token" name="license" type="text" autocomplete="off" spellcheck="false" required aria-describedby="license-help license-status" />
-              <button class="button button-small" type="submit">Restore</button>
-            </div>
-            <p id="license-help">The token is stored only in this browser.</p>
-            <p id="license-status" class="license-status" role="status" aria-live="polite">No license stored. The free extension is ready to use.</p>
-          </form>
-          <div id="supporter-unlock" class="supporter-unlock" hidden>
-            <strong>Supporter edition active</strong>
-            <a href="/supporter/">Open the printable field guide →</a>
-          </div>
-        </div>
-      </section>
-
-      <section class="boundary-section" aria-labelledby="boundary-title">
-        <p class="section-code">Honest boundary</p>
-        <h2 id="boundary-title">Comfort is personal. Control should not be.</h2>
-        <p>Calm Scroll is not a medical device and does not promise to prevent nausea. It gives you direct, reversible control over common page motion. If a site breaks, turn stable mode off for that site or keep the controls it needs.</p>
-      </section>
+      <aside class="truth-strip" aria-label="Product boundaries"><span>Local per-site settings</span><span>Not a reader mode or ad blocker</span><strong>Not medical treatment</strong></aside>
+      <section id="how-it-works" class="section" aria-labelledby="how-title"><div class="section-intro"><h2 id="how-title">See what is moving on each site.</h2><p>Some sites do not follow your reduced-motion setting. Calm Scroll makes the page’s moving parts visible first.</p></div><ol class="process-list"><li><span class="step-number">01</span><div><h3>Inspect the page</h3><p>See counts for autoplay media, animations, transforms, sticky layers, and smooth scrolling.</p></div></li><li><span class="step-number">02</span><div><h3>Turn on Stable mode</h3><p>One switch pauses media and stops detected page motion. It also watches for later motion.</p></div></li><li><span class="step-number">03</span><div><h3>Keep needed controls</h3><p>Allow media or keep sticky layers when a site needs them. Turn Stable mode off to restore the page.</p></div></li></ol></section>
+      <section class="inspection-demo" aria-labelledby="demo-link-title"><div class="demo-header"><div><h2 id="demo-link-title">Try the motion controls first.</h2><p>Use the sample page to inspect and change real moving elements.</p></div><a class="button button-primary" href="/demo/">Open sample demo</a></div></section>
+      <section id="install" class="section install-section" aria-labelledby="install-title"><div class="section-intro"><h2 id="install-title">Install the extension on desktop.</h2><p>The Chrome Web Store listing is not available yet. Download the extension ZIP, unzip it, then load its folder in desktop Chrome’s Developer mode.</p></div><ol class="install-list"><li><strong>Download and unzip</strong><span>Save the extension ZIP on your desktop computer.</span></li><li><strong>Open extensions</strong><span>Visit <code>chrome://extensions</code> and turn on Developer mode.</span></li><li><strong>Load the folder</strong><span>Choose Load unpacked, select the unzipped folder, then pin Calm Scroll.</span></li></ol><div class="install-action"><a class="button button-primary" href="/downloads/calm-scroll-chrome-v1.0.0.zip" download>Download extension ZIP</a><p><a href="/downloads/calm-scroll-chrome-v1.0.0.zip.sha256">Technical: verify the download checksum</a></p></div></section>
+      <section class="boundary-section" aria-labelledby="boundary-title"><h2 id="boundary-title">Know the limits.</h2><p>Calm Scroll is not a medical device and does not promise a health outcome. If a site breaks, turn Stable mode off or keep the control it needs.</p></section>
     </main>
-
-    <footer class="site-footer">
-      <div><a class="brand footer-brand" href="/"><span class="brand-mark" aria-hidden="true"><i></i></span><span>Calm Scroll</span></a><p>A local-first utility from Param Factory.</p></div>
-      <nav aria-label="Legal and project links"><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="https://github.com/B-Divyesh/sf-calm-scroll" rel="noreferrer">Source</a></nav>
-      <p class="asset-note">Hero illustration generated for this product with the Factory image model. No people or source artwork used.</p>
-    </footer>
+    <footer class="site-footer"><div><a class="brand footer-brand" href="/"><span class="brand-mark" aria-hidden="true"><i></i></span><span>Calm Scroll</span></a><p>Local controls for page motion.</p></div><nav aria-label="Footer links"><a href="/demo/">Demo</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a></nav><p class="asset-note">Built by Param Factory · v1.0.0 · Original illustration provenance in <a href="https://github.com/B-Divyesh/sf-calm-scroll/blob/main/.factory/design.md" rel="noreferrer">the source record (opens external site)</a>.</p></footer>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

@@ -1,0 +1,1 @@
+Stop page motion while you read with local per-site browser controls.

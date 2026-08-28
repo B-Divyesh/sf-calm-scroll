@@ -69,6 +69,7 @@
         </fieldset>
 
         <p id="saved-message" class="saved-message" role="status" aria-live="polite"></p>
+        <section class="settings-transfer" aria-labelledby="transfer-title"><p class="control-number">04 / BACKUP</p><h2 id="transfer-title">Move site settings</h2><p>Export a local JSON file or import one from another browser.</p><div><button id="export-settings" class="small-button" type="button">Export site settings</button><label class="import-button" for="import-settings">Import site settings<input id="import-settings" type="file" accept="application/json" /></label></div><fieldset id="import-mode"><legend>Import choice</legend><label><input type="radio" name="import-mode" value="merge" checked /> Add to current settings</label><label><input type="radio" name="import-mode" value="replace" /> Replace current settings</label></fieldset><p id="transfer-status" class="saved-message" role="status" aria-live="polite"></p></section>
       </div>
     </main>
 

@@ -1,7 +1,7 @@
 import { browser } from 'wxt/browser';
 import type { PopupStatus } from '../../src/core/messages';
 import { totalMotion } from '../../src/core/scanner';
-import { ruleFor, updateRule, type SiteRule, type SiteRules } from '../../src/core/rules';
+import { exportRules, importRules, ruleFor, updateRule, type SiteRule, type SiteRules } from '../../src/core/rules';
 
 const get = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 const loading = get<HTMLElement>('loading');
@@ -88,6 +88,26 @@ get('retry').addEventListener('click', () => {
   error.hidden = true;
   loading.hidden = false;
   void inspect();
+});
+
+get<HTMLButtonElement>('export-settings').addEventListener('click', async () => {
+  const stored = await browser.storage.local.get('siteRules') as { siteRules?: SiteRules };
+  const blob = new Blob([exportRules(stored.siteRules)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a'); link.href = url; link.download = 'calm-scroll-site-settings.json'; link.click();
+  URL.revokeObjectURL(url); get('transfer-status').textContent = 'Site settings exported to a local file.';
+});
+get<HTMLInputElement>('import-settings').addEventListener('change', async (event) => {
+  const file = (event.target as HTMLInputElement).files?.[0];
+  if (!file) return;
+  try {
+    const stored = await browser.storage.local.get('siteRules') as { siteRules?: SiteRules };
+    const mode = (document.querySelector<HTMLInputElement>('input[name="import-mode"]:checked')?.value ?? 'merge') as 'merge' | 'replace';
+    const siteRules = importRules(await file.text(), stored.siteRules, mode);
+    await browser.storage.local.set({ siteRules }); get('transfer-status').textContent = `Site settings ${mode === 'merge' ? 'added' : 'replaced'} from the local file.`;
+    if (current) await inspect();
+  } catch (reason) { get('transfer-status').textContent = reason instanceof Error ? reason.message : 'The settings file could not be imported.'; }
+  (event.target as HTMLInputElement).value = '';
 });
 
 void inspect();

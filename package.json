@@ -16,6 +16,7 @@
     "test:live": "node scripts/verify-live.mjs",
     "build": "npm run clean && npm run build:site",
     "test": "vitest run && playwright test",
+    "test:claims": "playwright test tests/e2e/claims.spec.ts",
     "test:unit": "vitest run",
     "test:e2e": "playwright test",
     "check": "tsc --noEmit && npm test && npm run build"

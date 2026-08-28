@@ -5,14 +5,17 @@ const outputs = [
   [1280, 853, 'webp', 'public/assets/calm-scroll-hero-1280.webp'],
   [768, 512, 'webp', 'public/assets/calm-scroll-hero-768.webp'],
   [1280, 853, 'avif', 'public/assets/calm-scroll-hero-1280.avif'],
-  [768, 512, 'avif', 'public/assets/calm-scroll-hero-768.avif']
+  [768, 512, 'avif', 'public/assets/calm-scroll-hero-768.avif'],
+  [1200, 630, 'png', 'public/assets/calm-scroll-social.png']
 ];
 
 for (const [width, height, format, destination] of outputs) {
   let pipeline = sharp(hero).resize(width, height, { fit: 'cover' });
   pipeline = format === 'avif'
     ? pipeline.avif({ quality: width === 768 ? 45 : 50, effort: 5 })
-    : pipeline.webp({ quality: width === 768 ? 72 : 76, effort: 5 });
+    : format === 'png'
+      ? pipeline.png({ compressionLevel: 9 })
+      : pipeline.webp({ quality: width === 768 ? 72 : 76, effort: 5 });
   await pipeline.toFile(`${destination}.next`);
   await import('node:fs/promises').then(({ rename }) => rename(`${destination}.next`, destination));
 }
@@ -20,3 +23,4 @@ for (const [width, height, format, destination] of outputs) {
 for (const size of [16, 32, 48, 128]) {
   await sharp('extension-public/icons/icon.svg').resize(size, size).png().toFile(`extension-public/icons/icon-${size}.png`);
 }
+await sharp('extension-public/icons/icon.svg').resize(180, 180).png().toFile('public/assets/apple-touch-icon.png');
