@@ -86,6 +86,15 @@ The production command checks the release identity before checking
 same both-theme accessibility scan, demo viewport, privacy, routing, 404,
 metadata, links, and offline behavior checks used for the repair.
 
+Production evidence: Azure deployment
+`73a6a8b2-1c57-4572-94f1-59afa7d91ed5` published release
+`5d93aa313db64eccef0f245234ab0f4495a5d60f`. Its cold run passed with the
+same ZIP SHA-256 above. The browser captures are
+`.factory/evidence/polish-5-live-home/screenshot-desktop-dark.png` and
+`.factory/evidence/polish-5-live-demo/screenshot-mobile-{light,dark}.png`.
+The final production run checks the published release identity again before
+handoff.
+
 ## Documentation and limits
 
 `README.md` explains who the extension is for, development, testing, packaging,

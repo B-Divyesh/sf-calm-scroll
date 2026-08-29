@@ -10,8 +10,8 @@ Repair commit: `88c2ef9bfcf77f39e788587ae35ffebabe7719ff`
 - `C:<id>`: the one exact tagged claim test in `tests/e2e/claims.spec.ts`.
 - `A11y`: the public-route browser suite runs Axe at 1440 × 900 and 390 × 844 in both light and dark color schemes.
 - `D-first`: `the demo opens with the report and a stabilized result in the first viewport`.
-- `Screens`: `.factory/evidence/polish-5-local/demo-390-light.png`, `demo-390-dark.png`, and `home-1440-dark.png`.
-- `Live`: cold production verification at `https://calm-scroll.sociobot.in` with `npm run test:live`; it checks release identity, privacy, routes, accessibility in both themes, offline use, and the first demo viewport.
+- `Screens`: local `.factory/evidence/polish-5-local/demo-390-light.png`, `demo-390-dark.png`, and `home-1440-dark.png`; cold-production `.factory/evidence/polish-5-live-demo/screenshot-mobile-light.png`, `screenshot-mobile-dark.png`, and `.factory/evidence/polish-5-live-home/screenshot-desktop-dark.png`.
+- `Live`: `EXPECTED_RELEASE_SHA=5d93aa313db64eccef0f245234ab0f4495a5d60f npm run test:live` passed at `https://calm-scroll.sociobot.in` after Azure deployment `73a6a8b2-1c57-4572-94f1-59afa7d91ed5`; it checks release identity, privacy, routes, accessibility in both themes, offline use, and the first demo viewport.
 
 ## Review 1 findings
 
@@ -122,4 +122,4 @@ Repair commit: `88c2ef9bfcf77f39e788587ae35ffebabe7719ff`
 
 ## Result
 
-Every ID in `review-1.md` through `review-5.md`, including the controller retry, is mapped above. No finding is deferred.
+Every ID in `review-1.md` through `review-5.md`, including the controller retry, is mapped above. No finding is deferred. The final cold production run is performed against the release identity before handoff.
