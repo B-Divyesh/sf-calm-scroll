@@ -1,20 +1,36 @@
-# Calm Scroll review 4 handoff
+# Calm Scroll polish round 4 handoff
 
 ## Outcome
 
-Independent adversarial review 4 is complete and committed. No product code was changed.
+Repair commit: `872f8dd96b22becca2e9706bf037b54d5cb5be2c`.
 
-Verdict: **FAIL** with one minor finding, `F-4-1`, recorded in `.factory/review-4.md`: Terms makes an MIT/free-software redistribution promise that is not listed or tested in `.factory/claims.json`.
+The last review finding, `F-4-1`, is fixed. The MIT/free-software promise is now a declared `mit-license` claim with one tagged browser test. The packaged extension now carries `LICENSE`, and that test proves the shipped license, README pointer, and Terms wording agree.
 
-## Verification
+The catalog sentence is now: “Try sample page motion controls before installing the extension.” It is verb-first and 64 characters.
 
-- Fresh clone: `/tmp/calm-scroll-review-4-oeHnU5`; `npm ci` completed with zero reported vulnerabilities.
-- Ran all nine exact commands from `.factory/claims.json`; all passed. The two unpacked-extension claims passed on desktop Chromium and skipped only the 390 px project by design.
-- `npm test` completed in the clean clone: 22 Vitest tests plus the full Playwright suite, with expected desktop-only skips.
-- `npm run build` completed and produced `dist/site/` and `dist/extension/chrome-mv3/`.
-- Live verifier passed with `EXPECTED_RELEASE_SHA=7d73f2fd4523c913bb640a78ee6ea6de06279e7c`; it checked live headers, release identity, assets, metadata, accessibility, routing, request isolation, reset, and offline demo behavior.
-- Fresh mobile and desktop live screenshots were visually inspected. A crawl of every linked public/download/external source URL returned 200.
+## Clean-clone verification
 
-## Next step
+Fresh checkout: `/tmp/calm-scroll-polish-4-clean-zxZW4l` at repair commit `872f8dd`.
 
-Add a tagged `mit-license` claim that verifies `LICENSE` and the Terms wording, or remove the Terms Free software promise. Rerun the new exact claim command, `npm test`, `npm run build`, and `npm run test:live` before requesting another review.
+- `npm ci` — passed; 0 vulnerabilities reported.
+- Every exact command in `.factory/claims.json` — passed: `demo-isolation`, `demo-responsive`, `sample-motion-controls`, `sample-exceptions`, `local-settings`, `extension-desktop-chromium`, `private-first-load`, `offline-demo`, `health-boundary`, and `mit-license`.
+- `npx tsc --noEmit` — passed.
+- `npm test` — passed: 23 Vitest tests and 46 Playwright tests across desktop Chromium and 390 px mobile.
+- `npm run build` — passed; produced `dist/site/` and `dist/extension/chrome-mv3/`.
+- `npm run test:package` — passed; three clean builds produced the identical extension ZIP: `9a1c9f6d4bd4c564342de621a554a33493cbf3c8615156957aa4a36cb94cdcfd`.
+- Local mobile Lighthouse — Performance 100, Accessibility 100, Best Practices 100, SEO 100; LCP 1.20 s, CLS 0, TBT 0. Evidence: `.factory/evidence/polish-4-local-home/lighthouse.json`.
+- Local desktop and 390 px captures: `.factory/evidence/polish-4-local-home/`, `.factory/evidence/polish-4-local-demo/`, `.factory/evidence/polish-4-local-terms/`, and `.factory/evidence/polish-4-local-404/`.
+
+## Deployment and live verification
+
+The static deployment is triggered from `main` after the documentation/evidence commit. After it has published, run:
+
+```bash
+EXPECTED_RELEASE_SHA=<published-main-commit> npm run test:live
+```
+
+That live suite checks cold browser loading, headers, package checksum, routing/404, 390 px layout, Axe serious/critical issues, same-origin privacy, isolated demo reset, route focus, and offline Stable mode. Final live evidence and the deployment commit are appended below after publication.
+
+## Known gaps
+
+None. The product remains a local-first MV3 browser extension with a static landing site. No AI feature is appropriate for this motion-control task, and no paid flow is advertised because no verified checkout is available.
