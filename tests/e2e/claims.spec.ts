@@ -236,3 +236,20 @@ test('@claim:health-boundary keeps the non-clinical wording', async ({ page }) =
   await page.goto('/'); await expect(page.getByText('Calm Scroll is not a medical device and does not promise a health outcome.')).toBeVisible();
   await page.goto('/terms/'); await expect(page.getByText('Calm Scroll is not a medical device, diagnosis, or treatment.')).toBeVisible();
 });
+
+test('@claim:mit-license keeps the published MIT license and terms aligned', async ({ page }) => {
+  const [license, shippedLicense, readme] = await Promise.all([
+    readFile('LICENSE', 'utf8'),
+    readFile('dist/extension/chrome-mv3/LICENSE', 'utf8'),
+    readFile('README.md', 'utf8')
+  ]);
+  expect(shippedLicense).toBe(license);
+  expect(license).toContain('Permission is hereby granted, free of charge, to any person obtaining a copy');
+  expect(license).toContain('to use, copy, modify, merge, publish, distribute, sublicense, and/or sell');
+  expect(license).toContain('The above copyright notice and this permission notice shall be included');
+  expect(readme).toContain('MIT. See [LICENSE](./LICENSE).');
+
+  await page.goto('/terms/');
+  await expect(page.getByRole('heading', { level: 2, name: 'Free software' })).toBeVisible();
+  await expect(page.getByText('The extension is free software under the MIT License. You may inspect, modify, and redistribute it under that license.')).toBeVisible();
+});

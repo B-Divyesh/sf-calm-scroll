@@ -1,1 +1,1 @@
-Try Stable mode on sample page motion before installing the extension.
+Try sample page motion controls before installing the extension.

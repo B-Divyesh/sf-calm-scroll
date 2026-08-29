@@ -54,4 +54,10 @@ describe('product contracts', () => {
     expect(description.length).toBeLessThanOrEqual(120);
     expect(description).toMatch(/^(Stop|Try|Turn|Keep|Read|Use)\b/);
   });
+
+  it('packages the MIT license with the downloadable extension', () => {
+    const source = readFileSync('scripts/package-extension.mjs', 'utf8');
+    expect(source).toContain("copyFile('LICENSE', 'dist/extension/chrome-mv3/LICENSE')");
+    expect(source).toContain("{ path: 'LICENSE', name: 'LICENSE' }");
+  });
 });
