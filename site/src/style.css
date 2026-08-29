@@ -165,7 +165,9 @@ h3 { margin-bottom: 8px; font-size: 25px; line-height: 1.1; }
 .button-small { min-height: 48px; padding: 9px 15px; box-shadow: 3px 3px 0 var(--ink); }
 .button:active, .nav-download:active { transform: translate(3px, 3px); box-shadow: 1px 1px 0 var(--ink); }
 .text-link { min-height: 44px; display: inline-flex; align-items: center; font-family: Arial, Helvetica, sans-serif; font-weight: 800; }
-.microcopy { margin: 20px 0 0; color: var(--muted); font: 700 13px/1.5 ui-monospace, SFMono-Regular, Consolas, monospace; }
+.hero-facts { display: flex; flex-wrap: wrap; gap: 8px 20px; margin: 22px 0 0; padding: 0; color: var(--muted); font: 700 14px/1.5 ui-monospace, SFMono-Regular, Consolas, monospace; list-style: none; }
+.hero-facts li { display: flex; gap: 8px; }
+.hero-facts li::before { content: '■'; color: var(--blue); }
 
 .hero-figure { position: relative; margin: 0; }
 .hero-figure picture { display: block; border: 3px solid var(--ink); background: #e8dfcc; box-shadow: 10px 10px 0 var(--ink); }
@@ -339,9 +341,8 @@ code { padding: 3px 5px; border: 1px solid var(--ink); background: var(--panel);
 }
 
 @media (max-width: 900px) {
-  .site-header { align-items: flex-start; padding: 12px 20px; }
+  .site-header { align-items: center; padding: 12px 20px; }
   .site-header nav { gap: 8px; }
-  .site-header nav a:not(.nav-download) { display: none; }
   .hero { grid-template-columns: 1fr; min-height: 0; padding-top: 64px; }
   .hero-figure { max-width: 720px; }
   .truth-strip { justify-content: stretch; }
@@ -361,8 +362,8 @@ code { padding: 3px 5px; border: 1px solid var(--ink); background: var(--panel);
 }
 
 @media (max-width: 640px) {
-  .site-header { gap:12px; }
-  .site-header nav { gap:14px; font-size:13px; }
+  .site-header { gap:8px 16px; flex-wrap:wrap; }
+  .site-header nav { width:100%; justify-content:space-between; gap:12px; border-top:2px solid var(--ink); }
   .site-header nav a { min-height:44px; }
   .desktop-install { width:100%; }
   .demo-banner { align-items:flex-start; flex-direction:column; padding:12px 20px; }

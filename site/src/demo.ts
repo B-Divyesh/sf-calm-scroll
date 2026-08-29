@@ -1,5 +1,4 @@
 type DemoState = { stable: boolean; allowMedia: boolean; keepSticky: boolean; late: boolean };
-if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => undefined));
 const KEY = 'demo:calm-scroll:sample';
 const defaults: DemoState = { stable: false, allowMedia: false, keepSticky: false, late: false };
 let state: DemoState = { ...defaults };
@@ -19,4 +18,5 @@ get<HTMLInputElement>('allow-media').addEventListener('change', (event) => { sta
 get<HTMLInputElement>('keep-sticky').addEventListener('change', (event) => { state.keepSticky = (event.target as HTMLInputElement).checked; render(); });
 get<HTMLButtonElement>('add-late-motion').addEventListener('click', () => { state.late = true; render(); });
 get<HTMLButtonElement>('reset-demo').addEventListener('click', () => { localStorage.removeItem(KEY); state = { ...defaults }; render(false); get<HTMLButtonElement>('stable-toggle').focus(); });
+document.querySelector<HTMLAnchorElement>('.demo-banner a[href="/"]')?.addEventListener('click', () => localStorage.removeItem(KEY));
 render();

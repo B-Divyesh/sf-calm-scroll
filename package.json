@@ -7,6 +7,7 @@
     "postinstall": "wxt prepare",
     "dev": "wxt",
     "dev:site": "vite --config site/vite.config.ts",
+    "preview:site": "node scripts/serve-preview.mjs",
     "clean": "node scripts/clean.mjs",
     "build:extension": "wxt build",
     "build:site": "npm run build:extension && vite build --config site/vite.config.ts && npm run package:extension && npm run release:metadata",
@@ -22,8 +23,9 @@
     "check": "tsc --noEmit && npm test && npm run build"
   },
   "devDependencies": {
-    "@axe-core/playwright": "^4.13.0",
-    "@playwright/test": "^1.62.1",
+    "@axe-core/playwright": "4.10.2",
+    "@playwright/test": "1.58.2",
+    "playwright-core": "1.58.2",
     "@types/jsdom": "^30.0.0",
     "@types/node": "^24.3.0",
     "archiver": "^7.0.1",

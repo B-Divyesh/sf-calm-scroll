@@ -13,7 +13,7 @@ export default defineConfig({
     { name: 'mobile-390', use: { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true } }
   ],
   webServer: {
-    command: 'npm run build && npm exec vite -- --config site/vite.config.ts preview --host 127.0.0.1 --port 4173',
+    command: 'npm run build && npm run preview:site',
     url: 'http://127.0.0.1:4173',
     reuseExistingServer: false,
     timeout: 120_000

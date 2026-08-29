@@ -18,4 +18,25 @@ describe('product contracts', () => {
     expect(source).toContain('media.pause()');
     expect(source).toContain('MutationObserver');
   });
+
+  it('gives every registered claim exactly one matching tagged test', () => {
+    const claims = JSON.parse(readFileSync('.factory/claims.json', 'utf8')) as Array<{ id: string; test: string }>;
+    const source = readFileSync('tests/e2e/claims.spec.ts', 'utf8');
+    const tags = [...source.matchAll(/@claim:([a-z0-9-]+)/g)].map((match) => match[1]);
+    expect(new Set(tags).size).toBe(tags.length);
+    expect(tags.sort()).toEqual(claims.map((claim) => claim.id).sort());
+    for (const claim of claims) expect(claim.test).toBe(`npm run test:claims -- --grep @claim:${claim.id}`);
+  });
+
+  it('routes unknown static paths through the designed 404 response', () => {
+    const config = JSON.parse(readFileSync('public/staticwebapp.config.json', 'utf8')) as Record<string, unknown>;
+    expect(config).not.toHaveProperty('navigationFallback');
+    expect(config).toHaveProperty('responseOverrides.404.rewrite', '/404.html');
+  });
+
+  it('keeps the catalog description verb-first and within 120 characters', () => {
+    const description = readFileSync('.factory/catalog-description.txt', 'utf8').trim();
+    expect(description.length).toBeLessThanOrEqual(120);
+    expect(description).toMatch(/^(Stop|Try|Turn|Keep|Read|Use)\b/);
+  });
 });

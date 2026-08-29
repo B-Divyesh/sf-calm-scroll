@@ -1,1 +1,1 @@
-Stop page motion while you read with local per-site browser controls.
+Stop page motion while you read with a one-click sample and per-site desktop controls.

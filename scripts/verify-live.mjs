@@ -64,4 +64,10 @@ const serviceWorker = await request('/sw.js');
 const swCache = header(serviceWorker, 'cache-control');
 if (/\bimmutable\b/i.test(swCache)) throw new Error(`/sw.js must revalidate, received ${swCache}`);
 
+const missing = await fetch(`${origin}/calm-scroll-missing-${Date.now()}`);
+const missingHtml = await missing.text();
+if (missing.status !== 404 || !missingHtml.includes('That page was not found.')) {
+  throw new Error(`Unknown route must return the styled 404 response; received ${missing.status}`);
+}
+
 console.log(`Live delivery policy, identity, and ZIP checksum pass: ${origin} (${release.source_commit}, ${actualChecksum})`);
