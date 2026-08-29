@@ -1,4 +1,10 @@
-# Calm Scroll — polish 6 handoff
+# Calm Scroll — verification 4 handoff
+
+> **FAIL — do not release candidate `72b9963f11448f4d1a67637467e1f69e02d38ce6`.**
+> Independent verification found F-4-1: required 390 px mobile touch targets
+> are undersized. Header `Demo` measures 41.7 × 44 px, `Install` measures
+> 43.4 × 44 px, and footer links are 15–18 px high. The acceptance contract
+> requires 44 × 44 px. See `.factory/verification-4.md` for exact evidence.
 
 ## Outcome
 
@@ -73,4 +79,7 @@ URL returns HTTP 404.
 evidence. `.factory/claims.json`, `.factory/demo.md`, `.factory/design.md`,
 `README.md`, `LICENSE`, `/privacy/`, and `/terms/` remain current.
 
-Known gaps: none.
+Known release-blocking gap: F-4-1 mobile touch targets. Repair every visible
+link/control to a non-overlapping 44 × 44 px hit area and rerun the verification
+commands in `.factory/verification-4.md`. No product code was changed during
+this verification.
