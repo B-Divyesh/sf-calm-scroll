@@ -1,48 +1,53 @@
-# Calm Scroll polish 3 handoff
+# Calm Scroll polish 3 retry 1 handoff
 
 ## Outcome
 
-This repair closes every cumulative finding from `review-1.md`, `review-2.md`, and `review-3.md`. The repair code commit is `f06666c295fafecbab7802802f729ccb8b7237a4`.
+All findings from `review-1.md`, `review-2.md`, and `review-3.md` remain closed. The controller’s offline-demo failure is fixed at its service-worker and test roots in repair commit `908acfb69139463abcce962221f0e8311f5f794c`.
 
-- Removed the stale Chrome Web Store availability sentence instead of retaining a time-sensitive untested claim.
-- Narrowed Privacy's offline statement to the exact demo route that is tested offline.
-- Added the README's isolated-demo assertion to `demo-isolation.where` and guarded it in the exact claim test.
-- Updated the catalog description to the verb-first, 10-word sentence: “Try a sample that stops page motion while you read.”
-- Preserved the MV3 extension, static landing site, isolated `?demo=1` flow, original neo-brutalist control-panel identity, shared route shell, metadata, legal pages, and real HTTP 404.
+- The offline claim creates a fresh browser context and explicitly awaits service-worker registration, activation, readiness, and page control before going offline.
+- The offline reload proves the cached title, heading, demo banner, motion report, JavaScript switch behavior, and computed stopped animation.
+- The service worker precaches the Vite-fingerprinted CSS and JavaScript discovered from built pages. It no longer returns home HTML for a missing asset.
+- The sample now has real smooth scrolling that Stable mode stops and restores. The late animation is inserted after Stable mode is on.
+- The moving sample label and “Add later motion” button no longer overlap on a 390 px screen. The responsive claim asserts their geometry.
+- The catalog now reads: “Try Stable mode on sample page motion before installing the extension.” It is verb-first and 70 characters.
+- The WXT MV3 extension, static deployment class, isolated `?demo=1` path, legal routes, real HTTP 404, and product-specific industrial visual system remain unchanged.
 
-## Exact verification evidence
+## Clean-clone verification
 
-Fresh remote clone: `/tmp/calm-scroll-polish-3-qvtYir` at `f06666c295fafecbab7802802f729ccb8b7237a4`.
+Fresh clone: `/tmp/calm-scroll-polish3-retry1-clean-cskiKf` at `908acfb69139463abcce962221f0e8311f5f794c`.
 
 Passed from that clone:
 
-- `npm ci`
+- `npm ci` with zero audit vulnerabilities.
 - Every command in `.factory/claims.json` independently: `demo-isolation`, `demo-responsive`, `sample-motion-controls`, `sample-exceptions`, `local-settings`, `extension-desktop-chromium`, `private-first-load`, `offline-demo`, and `health-boundary`.
-- `npx tsc --noEmit`
-- `npm test`: 22 Vitest tests passed; 41 Playwright tests passed; 3 mobile-only MV3 tests skipped as intended because unpacked extensions require desktop Chromium.
+- `npx tsc --noEmit`.
+- `npm test`: 22 Vitest tests passed; 41 Playwright tests passed; 3 mobile-only unpacked-extension tests skipped as intended.
 - `npm run build`: produced `dist/site/` and `dist/extension/chrome-mv3/`.
-- `npm run test:package`: three clean builds produced the identical ZIP checksum `bb331214c05faf071b74096e2c6acc3a8526f9821be0cf97661cc2d9bc513531`.
+- `npm run test:package`: three builds produced identical ZIP bytes with SHA-256 `bb331214c05faf071b74096e2c6acc3a8526f9821be0cf97661cc2d9bc513531`.
 
-Local visual evidence was reviewed at:
+The offline claim also passed 10 consecutive fresh-context repetitions across desktop Chromium and the 390 px project. No retry or enlarged Playwright timeout is used.
 
-- `.factory/evidence/polish-3-local-home/screenshot-desktop.png`
-- `.factory/evidence/polish-3-local-home/screenshot-mobile.png`
-- `.factory/evidence/polish-3-local-demo/screenshot-desktop.png`
-- `.factory/evidence/polish-3-local-demo/screenshot-mobile.png`
-- `.factory/evidence/polish-3-local-privacy/screenshot-desktop.png`
+## Accessibility, visual, and performance evidence
 
-The full finding map is in `.factory/polish-3.md`. Local AxeBuilder checks cover home, demo, Privacy, Terms, and 404 at desktop and 390 px with zero serious or critical violations.
+Playwright Axe checks cover home, demo, Privacy, Terms, and 404 at desktop and 390 px. Local and live checks found zero serious or critical violations, zero browser console errors, one h1 and one main landmark per route, complete labels/alt text, visible focus, reduced-motion handling, and no horizontal overflow.
 
-## Deployment and final cold check
+Evidence is stored under:
 
-Deployed `dist/site/` with `/opt/fleet/lib/deploy-static.sh calm-scroll dist/site`. Azure Static Web Apps deployment `c11c4093-1e9b-40e0-a21d-756577f397a6` completed successfully. `EXPECTED_RELEASE_SHA=686c3601d80ad5479318497933c8f9eea15eee68 npm run test:live` passed: release identity, SHA-256 `bb331214c05faf071b74096e2c6acc3a8526f9821be0cf97661cc2d9bc513531`, CSP, cache policy, headers, ZIP sidecar, and the invented-route HTTP 404 all matched.
+- `.factory/evidence/polish-3-retry1-local-home/`, `local-demo/`, `local-privacy/`, `local-terms/`, and `local-404/`.
+- `.factory/evidence/polish-3-retry1-live-home/`, `live-demo/`, `live-privacy/`, `live-terms/`, and `live-404/`.
 
-Cold production evidence is stored under `.factory/evidence/polish-3-live-home/`, `polish-3-live-demo/`, `polish-3-live-privacy/`, `polish-3-live-terms/`, and `polish-3-live-404/`. `/opt/fleet/lib/verify-url.sh` reported zero console errors; `lang="en"`; one h1 and main landmark; no images missing alt text; and no unlabeled buttons on home, `?demo=1`, Privacy, Terms, and 404.
+The final mobile screenshots were inspected directly. The demo controls are separated and the persistent banner, reset, exit, report, and Stable mode control remain visible.
 
-Live AxeBuilder checks at 1440 px and 390 px found zero serious or critical violations on home, demo, Privacy, Terms, and 404. A fresh 390 px demo check recorded the banner, only `demo:calm-scroll:sample` after use, Reset removal, `390 === scrollWidth`, same-origin-only requests, and the designed 404. A desktop cold check confirmed header navigation and Back focus/announce the destination heading, the exact narrowed Privacy sentence, absence of the stale cache sentence, and offline reload of `/demo/` after its first online visit.
+Live mobile Lighthouse: Performance 100, Accessibility 100, Best Practices 100, SEO 100; FCP 0.8 s, LCP 0.9 s, CLS 0, TBT 30 ms, total transfer 26 KiB.
 
-Live mobile Lighthouse scored Performance 100, Accessibility 100, Best Practices 100, and SEO 100. It measured FCP 0.9 s, LCP 0.9 s, CLS 0, TBT 30 ms, and 26 KiB total transfer.
+## Deployment and cold production check
+
+Deployment `47181a76-049b-486d-b511-e7e6fcc04563` published `dist/site/` through `/opt/fleet/lib/deploy-static.sh calm-scroll dist/site`.
+
+`EXPECTED_RELEASE_SHA=908acfb69139463abcce962221f0e8311f5f794c npm run test:live` passed against <https://calm-scroll.sociobot.in>. It verified the release identity, ZIP checksum, security/cache headers, all public routes at both viewports, complete semantic shells, Axe, the isolated demo/reset flow, same-origin requests, mobile control separation, route and Back focus, designed HTTP 404, and an operational offline reload after awaited activation/control.
+
+Cold screenshots and verifier JSON were recorded after deployment. The live demo at <https://calm-scroll.sociobot.in/?demo=1> was opened in a fresh browser context and rechecked online and offline.
 
 ## Known gaps
 
-None. The Chrome Web Store listing is intentionally not advertised; installation remains the documented desktop Chromium developer-install ZIP path.
+None.
