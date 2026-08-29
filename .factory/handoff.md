@@ -33,9 +33,13 @@ Local visual evidence was reviewed at:
 
 The full finding map is in `.factory/polish-3.md`. Local AxeBuilder checks cover home, demo, Privacy, Terms, and 404 at desktop and 390 px with zero serious or critical violations.
 
-## Deploy and final cold check
+## Deployment and final cold check
 
-Deploy `dist/site/` with `/opt/fleet/lib/deploy-static.sh calm-scroll dist/site`. After deployment, cold checks cover the home page, `/?demo=1`, Privacy, Terms, the designed 404, all declared claims, console errors, same-origin requests, focus navigation, metadata, and the service-worker offline demo behavior. `scripts/verify-live.mjs` verifies headers, archive checksum, release identity, cache policy, and HTTP 404.
+Deployed `dist/site/` with `/opt/fleet/lib/deploy-static.sh calm-scroll dist/site`. Azure Static Web Apps deployment `c11c4093-1e9b-40e0-a21d-756577f397a6` completed successfully. `EXPECTED_RELEASE_SHA=686c3601d80ad5479318497933c8f9eea15eee68 npm run test:live` passed: release identity, SHA-256 `bb331214c05faf071b74096e2c6acc3a8526f9821be0cf97661cc2d9bc513531`, CSP, cache policy, headers, ZIP sidecar, and the invented-route HTTP 404 all matched.
+
+Cold production evidence is stored under `.factory/evidence/polish-3-live-home/`, `polish-3-live-demo/`, `polish-3-live-privacy/`, `polish-3-live-terms/`, and `polish-3-live-404/`. `/opt/fleet/lib/verify-url.sh` reported zero console errors; `lang="en"`; one h1 and main landmark; no images missing alt text; and no unlabeled buttons on home, `?demo=1`, Privacy, Terms, and 404.
+
+Live AxeBuilder checks at 1440 px and 390 px found zero serious or critical violations on home, demo, Privacy, Terms, and 404. A fresh 390 px demo check recorded the banner, only `demo:calm-scroll:sample` after use, Reset removal, `390 === scrollWidth`, same-origin-only requests, and the designed 404. A desktop cold check confirmed header navigation and Back focus/announce the destination heading, the exact narrowed Privacy sentence, absence of the stale cache sentence, and offline reload of `/demo/` after its first online visit.
 
 ## Known gaps
 
