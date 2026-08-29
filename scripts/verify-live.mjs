@@ -1,4 +1,6 @@
 import { createHash } from 'node:crypto';
+import AxeBuilder from '@axe-core/playwright';
+import { chromium } from 'playwright';
 
 const origin = (process.env.LIVE_URL ?? 'https://calm-scroll.sociobot.in').replace(/\/$/, '');
 const immutable = /(?:^|,)\s*max-age=31536000(?:,|$)/i;
@@ -17,6 +19,10 @@ function header(response, name) {
 
 function expectIncludes(value, expected, label) {
   if (!value.includes(expected)) throw new Error(`${label} must include ${expected}; received ${value}`);
+}
+
+function assert(condition, message) {
+  if (!condition) throw new Error(message);
 }
 
 const home = await request('/');
@@ -70,4 +76,108 @@ if (missing.status !== 404 || !missingHtml.includes('That page was not found.'))
   throw new Error(`Unknown route must return the styled 404 response; received ${missing.status}`);
 }
 
-console.log(`Live delivery policy, identity, and ZIP checksum pass: ${origin} (${release.source_commit}, ${actualChecksum})`);
+const browser = await chromium.launch();
+try {
+  const routes = ['/', '/demo/', '/privacy/', '/terms/', '/404.html'];
+  for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
+    const context = await browser.newContext({ viewport });
+    const page = await context.newPage();
+    for (const path of routes) {
+      const errors = [];
+      const recordConsole = (message) => { if (message.type() === 'error') errors.push(message.text()); };
+      page.on('console', recordConsole);
+      page.on('pageerror', (error) => errors.push(error.message));
+      const response = await page.goto(`${origin}${path}`, { waitUntil: 'networkidle' });
+      assert(response?.ok(), `${path} did not load in Chromium`);
+      assert(await page.locator('html[lang="en"]').count() === 1, `${path} must set lang=en`);
+      assert(await page.locator('main').count() === 1, `${path} must have one main landmark`);
+      assert(await page.locator('h1').count() === 1, `${path} must have one h1`);
+      assert((await page.title()).length > 4, `${path} must have a route title`);
+      assert(await page.locator('.site-header nav a').allTextContents().then((labels) => labels.map((label) => label.trim()).join('|')) === 'Demo|Install|Privacy', `${path} has inconsistent navigation`);
+      assert(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth), `${path} overflows ${viewport.width}px`);
+      const accessibility = await new AxeBuilder({ page }).analyze();
+      const severe = accessibility.violations.filter((item) => item.impact === 'serious' || item.impact === 'critical');
+      assert(severe.length === 0, `${path} has serious or critical Axe violations: ${severe.map((item) => item.id).join(', ')}`);
+      assert(errors.length === 0, `${path} logged browser errors: ${errors.join(' | ')}`);
+      page.removeListener('console', recordConsole);
+    }
+    await context.close();
+  }
+
+  const demoContext = await browser.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: 'reduce' });
+  const demoPage = await demoContext.newPage();
+  const demoRequests = [];
+  demoPage.on('request', (item) => demoRequests.push(item.url()));
+  await demoPage.goto(`${origin}/`, { waitUntil: 'networkidle' });
+  await demoPage.getByRole('link', { name: 'Try it with sample data' }).click();
+  await demoPage.waitForURL(/\/demo\/\?demo=1$/);
+  assert(await demoPage.getByText('Demo — sample data, nothing is saved.').isVisible(), 'The demo banner is missing');
+  const animationBox = await demoPage.locator('.sample-animation').boundingBox();
+  const addButtonBox = await demoPage.getByRole('button', { name: 'Add later motion' }).boundingBox();
+  assert(animationBox && addButtonBox && animationBox.y + animationBox.height <= addButtonBox.y, 'Demo motion controls overlap at 390px');
+  await demoPage.getByRole('switch', { name: 'Turn on Stable mode' }).click();
+  assert(await demoPage.locator('html').evaluate((element) => getComputedStyle(element).scrollBehavior) === 'auto', 'Stable mode did not stop smooth scrolling');
+  assert(JSON.stringify(await demoPage.evaluate(() => Object.keys(localStorage))) === JSON.stringify(['demo:calm-scroll:sample']), 'Demo state escaped its storage namespace');
+  await demoPage.getByRole('button', { name: 'Reset demo' }).click();
+  assert(await demoPage.evaluate(() => localStorage.length) === 0, 'Reset demo did not remove demo state');
+  assert(demoRequests.every((url) => new URL(url).origin === origin), 'The home-to-demo flow made a third-party request');
+  await demoContext.close();
+
+  const focusContext = await browser.newContext();
+  const focusPage = await focusContext.newPage();
+  await focusPage.goto(`${origin}/`);
+  await focusPage.locator('.site-header').getByRole('link', { name: 'Demo' }).click();
+  assert(await focusPage.locator('h1').evaluate((heading) => heading === document.activeElement), 'Demo navigation did not focus its h1');
+  await focusPage.goBack();
+  assert(await focusPage.locator('h1').evaluate((heading) => heading === document.activeElement), 'Browser Back did not focus the home h1');
+  await focusContext.close();
+
+  const offlineContext = await browser.newContext({ serviceWorkers: 'allow' });
+  const offlinePage = await offlineContext.newPage();
+  await offlinePage.goto(`${origin}/demo/`);
+  const lifecycle = await offlinePage.evaluate(async () => {
+    const registration = await navigator.serviceWorker.register('/sw.js');
+    const worker = registration.installing ?? registration.waiting ?? registration.active;
+    if (!worker) throw new Error('The service worker registration has no worker.');
+    if (worker.state !== 'activated') {
+      await new Promise((resolve, reject) => {
+        const timeout = window.setTimeout(() => reject(new Error('The service worker did not activate.')), 10_000);
+        const handleState = () => {
+          if (worker.state !== 'activated') return;
+          window.clearTimeout(timeout);
+          worker.removeEventListener('statechange', handleState);
+          resolve();
+        };
+        worker.addEventListener('statechange', handleState);
+        handleState();
+      });
+    }
+    await navigator.serviceWorker.ready;
+    if (!navigator.serviceWorker.controller) {
+      await new Promise((resolve, reject) => {
+        const timeout = window.setTimeout(() => reject(new Error('The service worker did not take control.')), 10_000);
+        const handleControl = () => {
+          if (!navigator.serviceWorker.controller) return;
+          window.clearTimeout(timeout);
+          navigator.serviceWorker.removeEventListener('controllerchange', handleControl);
+          resolve();
+        };
+        navigator.serviceWorker.addEventListener('controllerchange', handleControl);
+        handleControl();
+      });
+    }
+    return { registration: registration.active?.state, controller: navigator.serviceWorker.controller?.state };
+  });
+  assert(lifecycle.registration === 'activated' && lifecycle.controller === 'activated', 'The live service worker was not active and controlling');
+  await offlineContext.setOffline(true);
+  const offlineResponse = await offlinePage.reload({ waitUntil: 'domcontentloaded' });
+  assert(offlineResponse?.status() === 200, 'The demo did not reload offline');
+  await offlinePage.getByRole('switch', { name: 'Turn on Stable mode' }).click();
+  assert(await offlinePage.locator('#stable-toggle').getAttribute('aria-checked') === 'true', 'Cached demo JavaScript did not run offline');
+  assert(await offlinePage.locator('.sample-animation').evaluate((element) => getComputedStyle(element).animationName) === 'none', 'Cached Stable mode did not work offline');
+  await offlineContext.close();
+} finally {
+  await browser.close();
+}
+
+console.log(`Live delivery, browser, accessibility, privacy, routing, and offline checks pass: ${origin} (${release.source_commit}, ${actualChecksum})`);
