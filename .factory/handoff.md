@@ -65,7 +65,7 @@ Live screenshots and machine-readable results:
 - `.factory/evidence/polish-2-live-privacy/`
 - `.factory/evidence/polish-2-live-terms/`
 
-After the evidence-only commit, rebuild, redeploy, and run `EXPECTED_RELEASE_SHA=$(git rev-parse HEAD) npm run test:live` so `release.json` identifies the final repository head.
+The evidence-only commit was rebuilt and redeployed. `EXPECTED_RELEASE_SHA=$(git rev-parse HEAD) npm run test:live` passed, so the final live `release.json` identifies the repository head and the published ZIP checksum matches.
 
 ## Run locally
 
