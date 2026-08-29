@@ -41,6 +41,8 @@ Cold production evidence is stored under `.factory/evidence/polish-3-live-home/`
 
 Live AxeBuilder checks at 1440 px and 390 px found zero serious or critical violations on home, demo, Privacy, Terms, and 404. A fresh 390 px demo check recorded the banner, only `demo:calm-scroll:sample` after use, Reset removal, `390 === scrollWidth`, same-origin-only requests, and the designed 404. A desktop cold check confirmed header navigation and Back focus/announce the destination heading, the exact narrowed Privacy sentence, absence of the stale cache sentence, and offline reload of `/demo/` after its first online visit.
 
+Live mobile Lighthouse scored Performance 100, Accessibility 100, Best Practices 100, and SEO 100. It measured FCP 0.9 s, LCP 0.9 s, CLS 0, TBT 30 ms, and 26 KiB total transfer.
+
 ## Known gaps
 
 None. The Chrome Web Store listing is intentionally not advertised; installation remains the documented desktop Chromium developer-install ZIP path.
