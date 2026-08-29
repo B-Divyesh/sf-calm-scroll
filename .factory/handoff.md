@@ -23,13 +23,12 @@ Fresh checkout: `/tmp/calm-scroll-polish-4-clean-zxZW4l` at repair commit `872f8
 
 ## Deployment and live verification
 
-The static deployment is triggered from `main` after the documentation/evidence commit. After it has published, run:
-
-```bash
-EXPECTED_RELEASE_SHA=<published-main-commit> npm run test:live
-```
-
-That live suite checks cold browser loading, headers, package checksum, routing/404, 390 px layout, Axe serious/critical issues, same-origin privacy, isolated demo reset, route focus, and offline Stable mode. Final live evidence and the deployment commit are appended below after publication.
+- Deployed with the work-order static configuration: `npm ci && npm test && npm run build:site`, then `/opt/fleet/lib/deploy-static.sh calm-scroll dist/site`.
+- Azure Static Web Apps deployment `8c9bc77b-ef19-4d27-8a00-abf2d8147939` succeeded to the existing `sf-calm-scroll` app; `https://calm-scroll.sociobot.in/` returned HTTPS 200.
+- Cold live `release.json` identified deployment commit `628303cfcb6d0ed65c4e1603ab20e6938bf252a6` and ZIP SHA-256 `9a1c9f6d4bd4c564342de621a554a33493cbf3c8615156957aa4a36cb94cdcfd`.
+- `EXPECTED_RELEASE_SHA=628303cfcb6d0ed65c4e1603ab20e6938bf252a6 npm run test:live` — passed. It checked cold browser loading, headers, package checksum, routing/404, 390 px layout, Axe serious/critical issues, same-origin privacy, isolated demo reset, route focus, and offline Stable mode.
+- Fresh desktop and mobile captures: `.factory/evidence/polish-4-live-home/`, `.factory/evidence/polish-4-live-demo/`, `.factory/evidence/polish-4-live-terms/`, and `.factory/evidence/polish-4-live-404/`.
+- Direct live license check — passed: the Terms MIT promise rendered at `/terms/`, and `LICENSE` extracted from the published extension ZIP byte-matched the repository MIT license.
 
 ## Known gaps
 

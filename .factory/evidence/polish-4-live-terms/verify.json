@@ -1,0 +1,19 @@
+{
+  "url": "https://calm-scroll.sociobot.in/terms/",
+  "checks": [
+    {
+      "viewport": "desktop",
+      "status": 200,
+      "title": "Terms — Calm Scroll",
+      "h1": "Terms",
+      "overflow": true
+    },
+    {
+      "viewport": "mobile",
+      "status": 200,
+      "title": "Terms — Calm Scroll",
+      "h1": "Terms",
+      "overflow": true
+    }
+  ]
+}

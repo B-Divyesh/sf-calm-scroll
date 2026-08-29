@@ -1,0 +1,19 @@
+{
+  "url": "https://calm-scroll.sociobot.in/",
+  "checks": [
+    {
+      "viewport": "desktop",
+      "status": 200,
+      "title": "Calm Scroll — Stop page motion while you read",
+      "h1": "Stop page motion while you read.",
+      "overflow": true
+    },
+    {
+      "viewport": "mobile",
+      "status": 200,
+      "title": "Calm Scroll — Stop page motion while you read",
+      "h1": "Stop page motion while you read.",
+      "overflow": true
+    }
+  ]
+}

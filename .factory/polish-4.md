@@ -11,7 +11,7 @@ Repair commit: `872f8dd96b22becca2e9706bf037b54d5cb5be2c`
 - `Suite`: `npm test` passed 23 Vitest and 46 Playwright checks, including axe on every public route at desktop and 390 px.
 - `Package`: `npm run test:package` reproduced the ZIP three times with SHA-256 `9a1c9f6d4bd4c564342de621a554a33493cbf3c8615156957aa4a36cb94cdcfd`.
 - `L-home`, `L-demo`, `L-terms`, `L-404`: local desktop and mobile screenshots in `.factory/evidence/polish-4-local-*`. `L-home` also holds Lighthouse 100/100/100/100 evidence.
-- `Live`: the deployed URL is checked cold with `EXPECTED_RELEASE_SHA=<published-main-commit> npm run test:live` after the work-order deployment publishes. Its output and current evidence are appended before handoff.
+- `Live`: Azure deployment `8c9bc77b-ef19-4d27-8a00-abf2d8147939` published `628303cfcb6d0ed65c4e1603ab20e6938bf252a6`. `EXPECTED_RELEASE_SHA=628303cfcb6d0ed65c4e1603ab20e6938bf252a6 npm run test:live` passed against <https://calm-scroll.sociobot.in/>. Cold desktop/mobile captures and JSON checks are in `.factory/evidence/polish-4-live-{home,demo,terms,404}/`; a direct live Terms + ZIP `LICENSE` byte-match passed.
 
 ## Review 1 findings
 

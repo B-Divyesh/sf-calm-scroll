@@ -1,0 +1,19 @@
+{
+  "url": "https://calm-scroll.sociobot.in/?demo=1",
+  "checks": [
+    {
+      "viewport": "desktop",
+      "status": 200,
+      "title": "Demo — Calm Scroll",
+      "h1": "Stop sample page motion.",
+      "overflow": true
+    },
+    {
+      "viewport": "mobile",
+      "status": 200,
+      "title": "Demo — Calm Scroll",
+      "h1": "Stop sample page motion.",
+      "overflow": true
+    }
+  ]
+}

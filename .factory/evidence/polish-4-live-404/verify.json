@@ -1,0 +1,19 @@
+{
+  "url": "https://calm-scroll.sociobot.in/calm-scroll-missing",
+  "checks": [
+    {
+      "viewport": "desktop",
+      "status": 404,
+      "title": "Page not found — Calm Scroll",
+      "h1": "That page was not found.",
+      "overflow": true
+    },
+    {
+      "viewport": "mobile",
+      "status": 404,
+      "title": "Page not found — Calm Scroll",
+      "h1": "That page was not found.",
+      "overflow": true
+    }
+  ]
+}
