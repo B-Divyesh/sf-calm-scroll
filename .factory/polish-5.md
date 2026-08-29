@@ -6,7 +6,7 @@ Repair commit: `88c2ef9bfcf77f39e788587ae35ffebabe7719ff`
 
 ## Evidence key
 
-- `Clean`: fresh clone `/tmp/calm-scroll-polish5-clean-XQTxg9`; every exact claim command, `npm run check`, and `npm run test:package`.
+- `Clean`: final fresh clone `/tmp/calm-scroll-polish5-final-pass-6vKhRf` at `59cd4bbd8a41c631b3c4d3627d54fc7d3a4076cb`; every exact claim command, `npm run check`, and `npm run test:package` passed.
 - `C:<id>`: the one exact tagged claim test in `tests/e2e/claims.spec.ts`.
 - `A11y`: the public-route browser suite runs Axe at 1440 × 900 and 390 × 844 in both light and dark color schemes.
 - `D-first`: `the demo opens with the report and a stabilized result in the first viewport`.

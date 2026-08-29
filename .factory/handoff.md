@@ -37,11 +37,15 @@ Local evidence is in `.factory/evidence/polish-5-local/`:
 - `lighthouse-final.json`: Lighthouse local preview scores are performance 100,
   accessibility 100, best practices 100, and SEO 100; `runtimeError` is null.
 
-From a fresh clone, the exact eleven commands listed in `.factory/claims.json`
-all pass, followed by `npm run check` and `npm run test:package`. The claim
-commands cover demo isolation and responsiveness, visible motion handling and
-exceptions, local settings, extension data privacy, Chromium scope, first-load
-privacy, offline demo use, the health boundary, and MIT packaging.
+From fresh clone `/tmp/calm-scroll-polish5-final-pass-6vKhRf` at
+`59cd4bbd8a41c631b3c4d3627d54fc7d3a4076cb`, the exact eleven commands listed
+in `.factory/claims.json` all passed, followed by `npm run check` and
+`npm run test:package`. The reproducible ZIP SHA-256 was
+`ba5082b9eb0925c5d79fb0500719b41cb43490edfb7f8c096c6bfb14f834d60d`.
+The claim commands cover demo isolation and responsiveness, visible motion
+handling and exceptions, local settings, extension data privacy, Chromium
+scope, first-load privacy, offline demo use, the health boundary, and MIT
+packaging.
 
 The normal local gate also passes:
 
