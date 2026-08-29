@@ -1,58 +1,74 @@
-# Calm Scroll — verification 4 handoff
-
-> **FAIL — do not release candidate `72b9963f11448f4d1a67637467e1f69e02d38ce6`.**
-> Independent verification found F-4-1: required 390 px mobile touch targets
-> are undersized. Header `Demo` measures 41.7 × 44 px, `Install` measures
-> 43.4 × 44 px, and footer links are 15–18 px high. The acceptance contract
-> requires 44 × 44 px. See `.factory/verification-4.md` for exact evidence.
+# Calm Scroll — repair 4 handoff
 
 ## Outcome
 
-Round six closes F-6-1 and preserves every earlier repair. The unsupported
-`web-share=()` token is gone from the production Permissions-Policy, so cold
-loads no longer produce that Chromium warning. The local preview now serves
-the same global response headers as production, and both local route tests and
-the live verifier reject Permissions-Policy warnings.
+F-4-1 from `.factory/verification-4.md` is repaired. At a 390 × 844 CSS px
+viewport, every visible public link, button, and input now has a real minimum
+44 × 44 px activation box. This includes header `Demo` and `Install`, every
+footer link, the checksum and source-record links, and the demo checkboxes.
+Targets are also asserted not to overlap. The skip link receives the same size
+when focused.
 
-The browser-extension artifact and deployment class are unchanged. The direct
-job wording, one-click isolated `?demo=1` path, banner/reset/exit behavior,
-eleven claim tests, real URLs, focus handling, styled 404, legal routes, mobile
-layout, dark-theme contrast, and neo-brutalist motion-control identity remain
-intact. `.factory/catalog-description.txt` is now a 73-character verb-first
-sentence.
+The root cause was text-sized anchor boxes: header links had only a minimum
+height, while footer and inline links had no target sizing at all. The repair
+uses a shared target rule rather than padding individual labels. Demo
+checkboxes are now 44 px custom square controls with the existing
+neo-brutalist visual language preserved.
+
+The static preview server now applies the route-specific cache headers in
+`staticwebapp.config.json`, so the local consumer delivery check exercises the
+same immutable asset, download, and revalidating service-worker policy as the
+deployment configuration.
+
+## Regression coverage
+
+`tests/e2e/site.spec.ts` now visits `/`, `/demo/`, `/privacy/`, `/terms/`, and
+`/404.html` at 390 px. It measures every visible `a`, `button`, and `input`,
+requires width and height of at least 44 px, checks pairwise target overlap,
+and focuses/measures the skip link. `scripts/verify-live.mjs` runs the same
+consumer-facing check against the deployed site at 390 px.
+
+Before the fix, the new regression failed on the original candidate with the
+verifier’s values: header `Demo` 41.7 × 44, header `Install` 43.4 × 44,
+footer `Demo` 41.7 × 18, `Privacy` 53.4 × 18, `Terms` 43.9 × 18, checksum
+15 px high, and source record 15 px high. After the fix the regression passes
+in both desktop-Chromium and mobile-390 projects.
 
 ## Verification
 
-Fresh clone: `/tmp/calm-scroll-polish6-final`.
+Fresh install and local verification completed from `/work/repo`:
 
 ```sh
 npm ci
-npm run test:claims -- --grep @claim:<id>  # run separately for all 11 IDs
-npm run check
-npm run test:package
+npx tsc --noEmit
+npm test                         # 26 Vitest + 62 Playwright checks
+npm run test:claims              # 19 passed; 3 expected mobile skips
+npm run build
+npm run test:package             # ZIP reproduced across 3 clean builds
+LIVE_URL=http://127.0.0.1:4173 EXPECTED_RELEASE_SHA=$(git rev-parse HEAD) npm run test:live
 ```
 
-All eleven exact claim commands pass. `npm run check` passes TypeScript, 26
-Vitest checks, 56 Playwright checks, four expected phone-project skips for
-desktop-only unpacked-extension tests, and the production build. Browser tests
-cover all public routes at 1440 × 900 and 390 × 844 in both color schemes.
-They fail on serious/critical Axe findings, page errors, console errors, or any
-Permissions-Policy warning.
+The extension ZIP is reproducible with SHA-256:
 
-`npm run test:package` reproduces the extension archive three times with
-SHA-256 `ba5082b9eb0925c5d79fb0500719b41cb43490edfb7f8c096c6bfb14f834d60d`.
-The site build remains 2.23 KB gzip of first-load JavaScript and 5.01 KB gzip
-of CSS. Local mobile Lighthouse scores 100 performance, 100 accessibility,
-100 best practices, and 100 SEO; LCP is 1.2 seconds, CLS is 0, and TBT is 0 ms.
+```text
+ba5082b9eb0925c5d79fb0500719b41cb43490edfb7f8c096c6bfb14f834d60d
+```
 
-`/opt/fleet/lib/verify-url.sh` passes on home, demo, Privacy, Terms, and 404.
-Its screenshots and reports are under `.factory/evidence/polish-6-local-*`.
-The Lighthouse report is
-`.factory/evidence/polish-6-local-home/lighthouse.json`.
+The local consumer verifier passed delivery headers, exact release identity,
+extension checksum, desktop and 390 px routes in light/dark mode, the new
+touch-target test, Axe serious/critical findings, console errors, keyboard
+focus/Back behavior, same-origin demo traffic, demo reset isolation, 404,
+service-worker activation/update, and offline demo operation.
 
-## Deployment and live verification
+`/opt/fleet/lib/verify-url.sh` also passed on home, demo, Privacy, Terms, and
+404: all have titles, `lang=en`, exactly one h1 and main landmark, image alt
+text, and no console errors. Evidence is in
+`.factory/evidence/repair-4-local-*`.
 
-Build and deploy the static artifact with the work-order path:
+The production deployment and exact-release check are recorded below after the
+repair commit is pushed and deployed.
+
+## Deploy
 
 ```sh
 npm run build
@@ -60,26 +76,7 @@ npm run build
 EXPECTED_RELEASE_SHA="$(git rev-parse HEAD)" npm run test:live
 ```
 
-The final live check covers response headers, the exact release identity,
-archive checksum, all public routes, both widths and themes, Axe, console and
-Permissions-Policy warnings, same-origin demo traffic, isolated/reset demo
-storage, focus and Back navigation, HTTP 404, and offline operation. Cold live
-screenshots and reports are under `.factory/evidence/polish-6-live-*`.
+## Known gaps
 
-Deployment `44097aef-6f42-497b-bb0e-c90d12982b1c` published source commit
-`8d6c04709324121f0608ba787b70d387e3a30f13`. Its exact-release live suite
-passed with ZIP SHA-256
-`ba5082b9eb0925c5d79fb0500719b41cb43490edfb7f8c096c6bfb14f834d60d`.
-The observed production Permissions-Policy omits `web-share`, and an invented
-URL returns HTTP 404.
-
-## Documentation and remaining work
-
-`.factory/polish-6.md` maps every finding from reviews 1–6 to its repair and
-evidence. `.factory/claims.json`, `.factory/demo.md`, `.factory/design.md`,
-`README.md`, `LICENSE`, `/privacy/`, and `/terms/` remain current.
-
-Known release-blocking gap: F-4-1 mobile touch targets. Repair every visible
-link/control to a non-overlapping 44 × 44 px hit area and rerun the verification
-commands in `.factory/verification-4.md`. No product code was changed during
-this verification.
+None. The browser-extension artifact and static deployment class are
+unchanged. All existing claim behavior remains covered by the full suite.

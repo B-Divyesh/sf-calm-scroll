@@ -6,6 +6,7 @@ const root = resolve('dist/site');
 const port = Number(process.env.PORT ?? 4173);
 const staticWebAppConfig = JSON.parse(readFileSync(join(root, 'staticwebapp.config.json'), 'utf8'));
 const globalHeaders = staticWebAppConfig.globalHeaders ?? {};
+const routeRules = staticWebAppConfig.routes ?? [];
 const types = {
   '.avif': 'image/avif', '.css': 'text/css; charset=utf-8', '.html': 'text/html; charset=utf-8',
   '.js': 'text/javascript; charset=utf-8', '.json': 'application/json; charset=utf-8', '.png': 'image/png',
@@ -22,6 +23,14 @@ function resolvePath(pathname) {
   return existsSync(index) ? index : undefined;
 }
 
+function routeHeaders(pathname) {
+  return routeRules.reduce((headers, rule) => {
+    const route = rule.route ?? '';
+    const matches = route.endsWith('*') ? pathname.startsWith(route.slice(0, -1)) : pathname === route;
+    return matches ? { ...headers, ...(rule.headers ?? {}) } : headers;
+  }, {});
+}
+
 createServer((request, response) => {
   const pathname = new URL(request.url ?? '/', 'http://127.0.0.1').pathname;
   const file = resolvePath(pathname);
@@ -29,5 +38,6 @@ createServer((request, response) => {
   response.statusCode = file ? 200 : 404;
   response.setHeader('Content-Type', types[extname(target)] ?? 'application/octet-stream');
   for (const [name, value] of Object.entries(globalHeaders)) response.setHeader(name, value);
+  for (const [name, value] of Object.entries(routeHeaders(pathname))) response.setHeader(name, value);
   createReadStream(target).pipe(response);
 }).listen(port, '127.0.0.1', () => console.log(`Calm Scroll preview: http://127.0.0.1:${port}`));

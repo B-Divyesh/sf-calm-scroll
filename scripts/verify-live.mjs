@@ -25,6 +25,38 @@ function assert(condition, message) {
   if (!condition) throw new Error(message);
 }
 
+async function assertMobileTouchTargets(page, path) {
+  const targets = await page.locator('a, button, input').evaluateAll((items) => items
+    .filter((target) => !target.classList.contains('skip-link'))
+    .filter((target) => {
+      const style = getComputedStyle(target);
+      return style.display !== 'none' && style.visibility !== 'hidden';
+    })
+    .map((target) => {
+      const rect = target.getBoundingClientRect();
+      return {
+        label: (target.getAttribute('aria-label') || target.textContent || target.id).trim(),
+        width: rect.width,
+        height: rect.height,
+        left: rect.left,
+        top: rect.top,
+        right: rect.right,
+        bottom: rect.bottom
+      };
+    }));
+  const undersized = targets.filter((target) => target.width < 44 || target.height < 44);
+  assert(undersized.length === 0, `${path} has an interactive target below 44 × 44 CSS pixels: ${JSON.stringify(undersized)}`);
+  const overlaps = targets.flatMap((target, index) => targets.slice(index + 1)
+    .filter((other) => target.left < other.right && target.right > other.left && target.top < other.bottom && target.bottom > other.top)
+    .map((other) => `${target.label} overlaps ${other.label}`));
+  assert(overlaps.length === 0, `${path} has overlapping interactive targets at 390px: ${overlaps.join(', ')}`);
+
+  const skipLink = page.locator('.skip-link');
+  await skipLink.focus();
+  const skipBox = await skipLink.boundingBox();
+  assert(skipBox && skipBox.width >= 44 && skipBox.height >= 44, `${path} has a skip link below 44 × 44 CSS pixels`);
+}
+
 const home = await request('/');
 const csp = header(home, 'content-security-policy');
 expectIncludes(csp, "default-src 'self'", 'CSP');
@@ -102,6 +134,7 @@ try {
         assert((await page.title()).length > 4, `${path} must have a route title`);
         assert(await page.locator('.site-header nav a').allTextContents().then((labels) => labels.map((label) => label.trim()).join('|')) === 'Demo|Install|Privacy', `${path} has inconsistent navigation`);
         assert(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth), `${path} overflows ${viewport.width}px`);
+        if (viewport.width === 390) await assertMobileTouchTargets(page, path);
         const accessibility = await new AxeBuilder({ page }).analyze();
         const severe = accessibility.violations.filter((item) => item.impact === 'serious' || item.impact === 'critical');
         assert(severe.length === 0, `${path} has serious or critical Axe violations in ${colorScheme} mode: ${severe.map((item) => item.id).join(', ')}`);

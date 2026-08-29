@@ -42,6 +42,45 @@ test('the compact 390px header remains visible and keyboard reachable', async ({
   expect(dimensions.scroll).toBeLessThanOrEqual(dimensions.client);
 });
 
+test('every public interactive target has a non-overlapping 44px hit area at 390px', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  for (const path of routes) {
+    await page.goto(path);
+    const targets = await page.locator('a, button, input').evaluateAll((items) => items
+      .filter((target) => !target.classList.contains('skip-link'))
+      .filter((target) => {
+        const style = getComputedStyle(target);
+        return style.display !== 'none' && style.visibility !== 'hidden';
+      })
+      .map((target) => {
+        const rect = target.getBoundingClientRect();
+        return {
+          label: (target.getAttribute('aria-label') || target.textContent || target.id).trim(),
+          width: rect.width,
+          height: rect.height,
+          left: rect.left,
+          top: rect.top,
+          right: rect.right,
+          bottom: rect.bottom
+        };
+      }));
+    const undersized = targets.filter((target) => target.width < 44 || target.height < 44);
+    expect(undersized, `${path} has an interactive target below 44 × 44 CSS pixels`).toEqual([]);
+
+    const overlaps = targets.flatMap((target, index) => targets.slice(index + 1)
+      .filter((other) => target.left < other.right && target.right > other.left && target.top < other.bottom && target.bottom > other.top)
+      .map((other) => `${target.label} overlaps ${other.label}`));
+    expect(overlaps, `${path} has overlapping interactive targets at 390px`).toEqual([]);
+
+    const skipLink = page.locator('.skip-link');
+    await skipLink.focus();
+    await expect(skipLink).toBeFocused();
+    const skipBox = await skipLink.boundingBox();
+    expect(skipBox?.width).toBeGreaterThanOrEqual(44);
+    expect(skipBox?.height).toBeGreaterThanOrEqual(44);
+  }
+});
+
 test('an unknown route returns the styled 404 response', async ({ page }) => {
   const response = await page.goto('/nothing-lives-here');
   expect(response?.status()).toBe(404);
