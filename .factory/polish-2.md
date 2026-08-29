@@ -108,3 +108,7 @@ Review commit: `08ad337b28f3497d168c7d6da26e3cf74d093392`
 | F-2-14 | Added complete route-specific canonical, OG, Twitter, and touch-icon metadata to demo, legal, and 404 pages. | `provides complete route metadata and the product social image` |
 
 No finding is deferred.
+
+## Live closure
+
+Deployment `03535246-28db-4527-ba97-e264663437a7` published the repaired site. Cold production checks confirmed HTTP 404 for an invented route, complete metadata and identical navigation on five routes, working route/Back focus, isolated `?demo=1` state and reset, same-origin-only requests, and zero console errors. Live Lighthouse scored 100 in all four categories; live axe found zero serious or critical issues. Screenshots are under `.factory/evidence/polish-2-live-*`.

@@ -52,7 +52,20 @@ Local verification screenshots:
 
 ## Live deployment
 
-Deployment and cold production evidence are recorded after the documentation commit is pushed. The required live checks are `npm run test:live`, `/opt/fleet/lib/verify-url.sh` for home and `?demo=1`, and explicit cold requests for all routes plus an invented path.
+Deployment `03535246-28db-4527-ba97-e264663437a7` published implementation commit `fa744331bf8f33b479edc72f36f3ca69da27f0a5` to <https://calm-scroll.sociobot.in/>. `npm run test:live` confirmed the release identity, CSP, Permissions-Policy, cache policy, extension download, and ZIP checksum. An invented cold URL returned HTTP 404 with “That page was not found.”
+
+A fresh 390 px browser then checked home, demo, Privacy, Terms, and 404. All routes had the same visible Demo / Install / Privacy header, complete metadata, no horizontal overflow, and no console errors. Header navigation and browser Back focused and announced the destination h1. The `?demo=1` path wrote only `demo:calm-scroll:sample`; Reset demo removed it. Its full request log contained only `https://calm-scroll.sociobot.in`.
+
+Live Lighthouse: performance 100, accessibility 100, best practices 100, SEO 100; LCP 1.1 s, CLS 0, total blocking time 40 ms. A separate live axe pass found zero serious or critical issues on all five routes at 390 px.
+
+Live screenshots and machine-readable results:
+
+- `.factory/evidence/polish-2-live-home/`
+- `.factory/evidence/polish-2-live-demo/`
+- `.factory/evidence/polish-2-live-privacy/`
+- `.factory/evidence/polish-2-live-terms/`
+
+After the evidence-only commit, rebuild, redeploy, and run `EXPECTED_RELEASE_SHA=$(git rev-parse HEAD) npm run test:live` so `release.json` identifies the final repository head.
 
 ## Run locally
 
