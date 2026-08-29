@@ -28,6 +28,9 @@ async function openExtension() {
 }
 
 test('@claim:demo-isolation uses only the demo namespace and resets it', async ({ page }) => {
+  const claimRegistry = JSON.parse(await readFile('.factory/claims.json', 'utf8')) as Array<{ id: string; where: string }>;
+  expect(claimRegistry.find((claim) => claim.id === 'demo-isolation')?.where).toContain('README');
+  expect(await readFile('README.md', 'utf8')).toContain('Try the isolated sample at <https://calm-scroll.sociobot.in/?demo=1>.');
   await page.goto('/?demo=1');
   await expect(page.getByText('Demo — sample data, nothing is saved.')).toBeVisible();
   await page.locator('#stable-toggle').evaluate((element: HTMLButtonElement) => element.click());
@@ -145,6 +148,8 @@ test('@claim:private-first-load makes no third-party requests', async ({ page })
 });
 
 test('@claim:offline-demo reloads after the first visit', async ({ context, page }) => {
+  await page.goto('/privacy/');
+  await expect(page.getByText('After one online visit, the sample demo reloads offline.')).toBeVisible();
   await page.goto('/demo/'); await page.waitForFunction(() => navigator.serviceWorker?.controller !== null);
   await context.setOffline(true); await page.reload(); await expect(page.getByRole('heading', { level: 1 })).toHaveText('Stop sample page motion.');
 });

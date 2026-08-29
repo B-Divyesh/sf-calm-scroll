@@ -28,6 +28,15 @@ describe('product contracts', () => {
     for (const claim of claims) expect(claim.test).toBe(`npm run test:claims -- --grep @claim:${claim.id}`);
   });
 
+  it('names every published location for the isolated demo claim', () => {
+    const claims = JSON.parse(readFileSync('.factory/claims.json', 'utf8')) as Array<{ id: string; where: string }>;
+    const isolation = claims.find((claim) => claim.id === 'demo-isolation');
+    expect(isolation?.where).toContain('Demo banner');
+    expect(isolation?.where).toContain('Privacy');
+    expect(isolation?.where).toContain('README');
+    expect(isolation?.where).toContain('.factory/demo.md');
+  });
+
   it('routes unknown static paths through the designed 404 response', () => {
     const config = JSON.parse(readFileSync('public/staticwebapp.config.json', 'utf8')) as Record<string, unknown>;
     expect(config).not.toHaveProperty('navigationFallback');

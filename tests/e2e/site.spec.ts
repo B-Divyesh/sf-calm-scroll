@@ -45,6 +45,8 @@ test('home offers an immediate demo and labels desktop installation', async ({ p
   await expect(page.getByRole('link', { name: 'Try it with sample data' })).toHaveAttribute('href', '/?demo=1');
   await expect(page.getByText('The demo fits phone and desktop screens.')).toBeVisible();
   await expect(page.getByRole('link', { name: 'Install on desktop Chrome or Chromium' })).toBeVisible();
+  await expect(page.locator('#install .section-intro > p')).toHaveText('Download the extension ZIP, unzip it, then load its folder in desktop Chrome’s Developer mode.');
+  await expect(page.getByText('The Chrome Web Store listing is not available yet.')).toHaveCount(0);
 });
 
 test('layout stays within a 390px viewport and respects reduced motion', async ({ page }) => {

@@ -1,4 +1,4 @@
-# Copy audit — polish round 2
+# Copy audit — polish round 3
 
 Counts treat hyphenated terms and URLs as one word. Controls and headings are included because visitors rely on them. No retained sentence exceeds 22 words. No banned marketing term remains.
 
@@ -32,7 +32,6 @@ Counts treat hyphenated terms and URLs as one word. Controls and headings are in
 | 10 | Use the sample page to inspect and change real moving elements. | Pass |
 | 3 | Open sample demo | Pass |
 | 5 | Install the extension on desktop. | Pass |
-| 9 | The Chrome Web Store listing is not available yet. | Pass |
 | 15 | Download the extension ZIP, unzip it, then load its folder in desktop Chrome’s Developer mode. | Pass |
 | 8 | Save the extension ZIP on your desktop computer. | Pass |
 | 7 | Visit chrome://extensions and turn on Developer mode. | Pass |
@@ -73,6 +72,13 @@ Counts treat hyphenated terms and URLs as one word. Controls and headings are in
 | 7 | Deploy dist/site/ as a static site. | Pass |
 | 10 | public/staticwebapp.config.json supplies the static-host headers and styled 404 response. | Pass |
 | 4 | MIT. See LICENSE. | Pass |
+
+## Privacy and catalog
+
+| Words | Text | Result |
+| ---: | --- | --- |
+| 9 | After one online visit, the sample demo reloads offline. | Pass; `offline-demo` |
+| 10 | Try a sample that stops page motion while you read. | Pass; `sample-motion-controls` |
 
 ## Terminology
 
