@@ -1,7 +1,7 @@
 # Polish round 3 — final cumulative closure
 
-Base reviewed: `a15931b5360027fea85db18c0c6d607c6e3b3e8c`  
-Review report: `3722f13c533c22244838b66667d62fdd6fa76920`  
+Base reviewed: `a15931b5360027fea85db18c0c6d607c6e3b3e8c`
+Review report: `3722f13c533c22244838b66667d62fdd6fa76920`
 Repair code commit: `f06666c295fafecbab7802802f729ccb8b7237a4`
 
 ## Evidence key
