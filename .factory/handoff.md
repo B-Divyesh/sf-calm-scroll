@@ -60,6 +60,13 @@ Permissions-Policy warnings, same-origin demo traffic, isolated/reset demo
 storage, focus and Back navigation, HTTP 404, and offline operation. Cold live
 screenshots and reports are under `.factory/evidence/polish-6-live-*`.
 
+Deployment `44097aef-6f42-497b-bb0e-c90d12982b1c` published source commit
+`8d6c04709324121f0608ba787b70d387e3a30f13`. Its exact-release live suite
+passed with ZIP SHA-256
+`ba5082b9eb0925c5d79fb0500719b41cb43490edfb7f8c096c6bfb14f834d60d`.
+The observed production Permissions-Policy omits `web-share`, and an invented
+URL returns HTTP 404.
+
 ## Documentation and remaining work
 
 `.factory/polish-6.md` maps every finding from reviews 1–6 to its repair and

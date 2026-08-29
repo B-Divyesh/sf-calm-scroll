@@ -11,7 +11,7 @@ Review report: `73fe490497b535ec2b5c4bf19eacb0062061e90c`
 - `Local`: `/opt/fleet/lib/verify-url.sh` passed for home, demo, Privacy, Terms, and 404. Evidence is under `.factory/evidence/polish-6-local-*`.
 - `Lighthouse`: `.factory/evidence/polish-6-local-home/lighthouse.json`; 100 performance, 100 accessibility, 100 best practices, 100 SEO, LCP 1.2 s, CLS 0, TBT 0 ms.
 - `Package`: three builds produced the same extension ZIP SHA-256, `ba5082b9eb0925c5d79fb0500719b41cb43490edfb7f8c096c6bfb14f834d60d`.
-- `Live`: cold checks at <https://calm-scroll.sociobot.in/> using `npm run test:live`, including all five routes, both viewports/themes, demo isolation, offline use, routing, 404, and policy-warning capture. Screenshots are under `.factory/evidence/polish-6-live-*`.
+- `Live`: deployment `44097aef-6f42-497b-bb0e-c90d12982b1c` published `8d6c04709324121f0608ba787b70d387e3a30f13`; its exact-release `npm run test:live` passed at <https://calm-scroll.sociobot.in/>. The run covers all five routes, both viewports/themes, demo isolation, offline use, routing, 404, and policy-warning capture. Screenshots are under `.factory/evidence/polish-6-live-*`.
 
 ## Review 1 findings
 
