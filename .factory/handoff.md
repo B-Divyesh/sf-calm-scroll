@@ -1,23 +1,42 @@
-# Calm Scroll review 3 handoff
+# Calm Scroll polish 3 handoff
 
 ## Outcome
 
-Completed the requested adversarial, read-only product review. No product code was changed. The review is **FAIL** because `.factory/review-3.md` records three minor claim-registry/copy coverage findings: an unregistered Chrome Web Store availability statement, an offline claim broader than its test, and a missing README location for the isolation claim.
+This repair closes every cumulative finding from `review-1.md`, `review-2.md`, and `review-3.md`. The repair code commit is `f06666c295fafecbab7802802f729ccb8b7237a4`.
 
-## Verification performed
+- Removed the stale Chrome Web Store availability sentence instead of retaining a time-sensitive untested claim.
+- Narrowed Privacy's offline statement to the exact demo route that is tested offline.
+- Added the README's isolated-demo assertion to `demo-isolation.where` and guarded it in the exact claim test.
+- Updated the catalog description to the verb-first, 10-word sentence: “Try a sample that stops page motion while you read.”
+- Preserved the MV3 extension, static landing site, isolated `?demo=1` flow, original neo-brutalist control-panel identity, shared route shell, metadata, legal pages, and real HTTP 404.
 
-- Fresh live Chromium checks at 390 × 844 and 1440 × 900.
-- Cold first-screen, one-click demo, Reset, demo-storage isolation, same-origin request log, and responsive-layout checks.
-- Live structure checks for home, demo, Privacy, Terms, direct 404, and an invented HTTP-404 route; link crawl; route/Back focus and announcement; console checks.
-- Fresh local clone at `/tmp/calm-scroll-review-3-clean`: `npm ci`, every command in `.factory/claims.json`, `npm test`, and `npm run build`.
+## Exact verification evidence
 
-All nine claim commands passed. `npm test` passed 21 unit/contract tests and 42 browser tests, with two expected mobile skips for desktop-only unpacked-extension tests. `npm run build` produced `dist/site/` and `dist/extension/chrome-mv3/`.
+Fresh remote clone: `/tmp/calm-scroll-polish-3-qvtYir` at `f06666c295fafecbab7802802f729ccb8b7237a4`.
 
-## Files changed
+Passed from that clone:
 
-- `.factory/review-3.md` — full review, evidence, copy audit, history recheck, and fixes.
-- `.factory/handoff.md` — this handoff.
+- `npm ci`
+- Every command in `.factory/claims.json` independently: `demo-isolation`, `demo-responsive`, `sample-motion-controls`, `sample-exceptions`, `local-settings`, `extension-desktop-chromium`, `private-first-load`, `offline-demo`, and `health-boundary`.
+- `npx tsc --noEmit`
+- `npm test`: 22 Vitest tests passed; 41 Playwright tests passed; 3 mobile-only MV3 tests skipped as intended because unpacked extensions require desktop Chromium.
+- `npm run build`: produced `dist/site/` and `dist/extension/chrome-mv3/`.
+- `npm run test:package`: three clean builds produced the identical ZIP checksum `bb331214c05faf071b74096e2c6acc3a8526f9821be0cf97661cc2d9bc513531`.
 
-## Next steps
+Local visual evidence was reviewed at:
 
-Resolve F-3-1 through F-3-3 in the review, then rerun the listed claim tests, `npm test`, `npm run build`, and a fresh live cold check. No deployment action was taken.
+- `.factory/evidence/polish-3-local-home/screenshot-desktop.png`
+- `.factory/evidence/polish-3-local-home/screenshot-mobile.png`
+- `.factory/evidence/polish-3-local-demo/screenshot-desktop.png`
+- `.factory/evidence/polish-3-local-demo/screenshot-mobile.png`
+- `.factory/evidence/polish-3-local-privacy/screenshot-desktop.png`
+
+The full finding map is in `.factory/polish-3.md`. Local AxeBuilder checks cover home, demo, Privacy, Terms, and 404 at desktop and 390 px with zero serious or critical violations.
+
+## Deploy and final cold check
+
+Deploy `dist/site/` with `/opt/fleet/lib/deploy-static.sh calm-scroll dist/site`. After deployment, cold checks cover the home page, `/?demo=1`, Privacy, Terms, the designed 404, all declared claims, console errors, same-origin requests, focus navigation, metadata, and the service-worker offline demo behavior. `scripts/verify-live.mjs` verifies headers, archive checksum, release identity, cache policy, and HTTP 404.
+
+## Known gaps
+
+None. The Chrome Web Store listing is intentionally not advertised; installation remains the documented desktop Chromium developer-install ZIP path.
