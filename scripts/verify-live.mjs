@@ -180,6 +180,8 @@ try {
   await offlineContext.setOffline(true);
   const offlineResponse = await offlinePage.reload({ waitUntil: 'domcontentloaded' });
   assert(offlineResponse?.status() === 200, 'The demo did not reload offline');
+  assert(await offlinePage.locator('#stable-toggle').getAttribute('aria-checked') === 'true', 'The offline demo did not retain its stabilized default');
+  await offlinePage.getByRole('switch', { name: 'Turn off Stable mode' }).click();
   await offlinePage.getByRole('switch', { name: 'Turn on Stable mode' }).click();
   assert(await offlinePage.locator('#stable-toggle').getAttribute('aria-checked') === 'true', 'Cached demo JavaScript did not run offline');
   assert(await offlinePage.locator('.sample-animation').evaluate((element) => getComputedStyle(element).animationName) === 'none', 'Cached Stable mode did not work offline');
