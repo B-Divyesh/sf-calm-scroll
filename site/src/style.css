@@ -303,11 +303,13 @@ code { padding: 3px 5px; border: 1px solid var(--ink); background: var(--panel);
 .sample-toolbar { display:flex; justify-content:space-between; gap:16px; padding:12px 16px; border-bottom:2px solid var(--ink); background:var(--yellow); font:800 14px/1 ui-monospace, monospace; }
 .sample-sticky { position:sticky; top:0; z-index:1; padding:12px 16px; background:var(--ink); color:var(--panel); font:800 14px/1 Arial, sans-serif; }
 .sample-content { min-height:410px; padding:32px; overflow:hidden; background:repeating-linear-gradient(0deg, transparent 0 47px, color-mix(in srgb, var(--ink) 12%, transparent) 48px); }
+.demo-document { scroll-behavior:smooth; }
+.demo-document.stable-document { scroll-behavior:auto; }
 .sample-content h2 { max-width:600px; margin-top:40px; font-size:42px; }
 .sample-autoplay { width:150px; padding:10px; border:2px solid var(--ink); background:var(--yellow); font:800 13px Arial, sans-serif; animation:demo-pulse 1.2s infinite alternate; }
 .sample-moving { width:180px; margin:26px 0; padding:14px; border:2px solid var(--ink); background:#dce7ff; font:800 14px Arial, sans-serif; transform:translateX(90px); }
 .sample-animation, .late-animation { display:inline-block; padding:12px; border:2px solid var(--ink); background:#d8f4e5; font:800 14px Arial, sans-serif; animation:demo-drift 1s infinite alternate ease-in-out; }
-.sample-content button { min-height:44px; margin:28px 0; padding:8px 12px; border:2px solid var(--ink); background:var(--panel); color:var(--ink); font-weight:900; cursor:pointer; }
+.sample-content button { display:block; min-height:44px; margin:28px 0; padding:8px 12px; border:2px solid var(--ink); background:var(--panel); color:var(--ink); font-weight:900; cursor:pointer; }
 .demo-controls { display:grid; grid-template-columns:1fr 1fr; gap:48px; margin-top:56px; padding:32px; border:3px solid var(--ink); background:var(--panel); }
 .demo-controls h2 { font-size:40px; }
 .control-stack { display:grid; align-content:start; gap:16px; }

@@ -2,9 +2,11 @@ type DemoState = { stable: boolean; allowMedia: boolean; keepSticky: boolean; la
 const KEY = 'demo:calm-scroll:sample';
 const defaults: DemoState = { stable: false, allowMedia: false, keepSticky: false, late: false };
 let state: DemoState = { ...defaults };
+document.documentElement.classList.add('demo-document');
 const get = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 function save() { localStorage.setItem(KEY, JSON.stringify(state)); }
 function render(persist = true) {
+  document.documentElement.classList.toggle('stable-document', state.stable);
   document.body.classList.toggle('is-stable', state.stable); document.body.classList.toggle('allow-media', state.allowMedia); document.body.classList.toggle('keep-sticky', state.keepSticky);
   const toggle = get<HTMLButtonElement>('stable-toggle'); toggle.setAttribute('aria-checked', String(state.stable)); toggle.textContent = state.stable ? 'Turn off Stable mode' : 'Turn on Stable mode';
   get<HTMLInputElement>('allow-media').disabled = !state.stable; get<HTMLInputElement>('allow-media').checked = state.allowMedia;

@@ -5,3 +5,5 @@ Open <https://calm-scroll.sociobot.in/?demo=1> or `/?demo=1` locally. That isola
 The sample includes an autoplay indicator, an animation, a transformed block, a sticky sample navigation bar, smooth scrolling, and a button that adds a later animation. Stable mode changes only those sample elements. The two exception controls restore media visibility or sticky positioning independently.
 
 Demo state is stored only as `demo:calm-scroll:sample` in `localStorage`. It never reads extension settings, license keys, or production data. “Reset demo” removes that key. “Start for real” returns to the landing page.
+
+After the first online visit, the service worker precaches the demo page and its fingerprinted CSS and JavaScript. The `offline-demo` claim test creates a fresh browser context, awaits registration, activation, and control, then reloads offline and operates Stable mode.

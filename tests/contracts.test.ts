@@ -2,12 +2,18 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
 describe('product contracts', () => {
-  it('keeps demo storage isolated and registers offline support', () => {
+  it('keeps demo storage isolated and installs a complete offline shell', () => {
     const source = readFileSync('site/src/main.ts', 'utf8');
     const demo = readFileSync('site/src/demo.ts', 'utf8');
+    const worker = readFileSync('public/sw.js', 'utf8');
     expect(demo).toContain("demo:calm-scroll:sample");
     expect(demo).toContain('localStorage.removeItem(KEY)');
     expect(source).toContain("navigator.serviceWorker.register('/sw.js')");
+    expect(worker).toContain('async function precacheShell()');
+    expect(worker).toContain('html.matchAll');
+    expect(worker).toContain('event.waitUntil(precacheShell()');
+    expect(worker).toContain('self.clients.claim()');
+    expect(worker).not.toContain("cached || caches.match('/')");
   });
 
   it('injects a stable mode that covers all declared motion sources', () => {

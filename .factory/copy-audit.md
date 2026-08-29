@@ -78,7 +78,7 @@ Counts treat hyphenated terms and URLs as one word. Controls and headings are in
 | Words | Text | Result |
 | ---: | --- | --- |
 | 9 | After one online visit, the sample demo reloads offline. | Pass; `offline-demo` |
-| 10 | Try a sample that stops page motion while you read. | Pass; `sample-motion-controls` |
+| 11 | Try Stable mode on sample page motion before installing the extension. | Pass; `sample-motion-controls` |
 
 ## Terminology
 

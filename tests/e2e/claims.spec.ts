@@ -50,15 +50,17 @@ test('@claim:sample-motion-controls stops all sample motion and preserves text',
   await expect(page.locator('#transform-count')).toHaveText('1');
   await expect(page.locator('#sticky-count')).toHaveText('1');
   await expect(page.locator('#smooth-count')).toHaveText('Yes');
+  expect(await page.locator('html').evaluate((element) => getComputedStyle(element).scrollBehavior)).toBe('smooth');
   const copy = await page.locator('#sample-copy').textContent();
-  await page.getByRole('button', { name: 'Add later motion' }).click();
-  await expect(page.locator('#animation-count')).toHaveText('2');
   await page.locator('#stable-toggle').evaluate((element: HTMLButtonElement) => element.click());
   await expect(page.locator('#stable-toggle')).toHaveAttribute('aria-checked', 'true');
   expect(await page.locator('.sample-animation').evaluate((el) => getComputedStyle(el).animationName)).toBe('none');
   expect(await page.locator('.sample-moving').evaluate((el) => getComputedStyle(el).transform)).toBe('none');
   expect(await page.locator('.sample-sticky').evaluate((el) => getComputedStyle(el).position)).toBe('static');
   expect(await page.locator('.sample-autoplay').evaluate((el) => getComputedStyle(el).visibility)).toBe('hidden');
+  expect(await page.locator('html').evaluate((element) => getComputedStyle(element).scrollBehavior)).toBe('auto');
+  await page.getByRole('button', { name: 'Add later motion' }).click();
+  await expect(page.locator('#animation-count')).toHaveText('2');
   expect(await page.locator('.late-animation').evaluate((el) => getComputedStyle(el).animationName)).toBe('none');
   expect(await page.locator('#sample-copy').textContent()).toBe(copy);
 });
@@ -74,12 +76,19 @@ test('@claim:sample-exceptions restore only the selected sample behavior', async
   await page.locator('#stable-toggle').evaluate((element: HTMLButtonElement) => element.click());
   expect(await page.locator('.sample-animation').evaluate((el) => getComputedStyle(el).animationName)).not.toBe('none');
   expect(await page.locator('.sample-moving').evaluate((el) => getComputedStyle(el).transform)).not.toBe('none');
+  expect(await page.locator('html').evaluate((element) => getComputedStyle(element).scrollBehavior)).toBe('smooth');
 });
 
 test('@claim:demo-responsive works from the query entry point at phone and desktop sizes', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/?demo=1');
   await expect(page).toHaveURL(/\/demo\/\?demo=1$/);
   await expect(page.getByText('Demo — sample data, nothing is saved.')).toBeVisible();
+  const animationBox = await page.locator('.sample-animation').boundingBox();
+  const addButtonBox = await page.getByRole('button', { name: 'Add later motion' }).boundingBox();
+  expect(animationBox).not.toBeNull();
+  expect(addButtonBox).not.toBeNull();
+  expect(animationBox!.y + animationBox!.height).toBeLessThanOrEqual(addButtonBox!.y);
   await page.getByRole('switch', { name: 'Turn on Stable mode' }).click();
   await expect(page.locator('#stable-toggle')).toHaveAttribute('aria-checked', 'true');
   await page.getByRole('button', { name: 'Reset demo' }).click();
@@ -147,11 +156,80 @@ test('@claim:private-first-load makes no third-party requests', async ({ page })
   expect(requests.length).toBeGreaterThan(0); expect(requests.every((url) => new URL(url).origin === origin)).toBe(true);
 });
 
-test('@claim:offline-demo reloads after the first visit', async ({ context, page }) => {
-  await page.goto('/privacy/');
-  await expect(page.getByText('After one online visit, the sample demo reloads offline.')).toBeVisible();
-  await page.goto('/demo/'); await page.waitForFunction(() => navigator.serviceWorker?.controller !== null);
-  await context.setOffline(true); await page.reload(); await expect(page.getByRole('heading', { level: 1 })).toHaveText('Stop sample page motion.');
+test('@claim:offline-demo reloads after awaited service-worker activation and control', async ({ browser }, testInfo) => {
+  const context = await browser.newContext({
+    baseURL: 'http://127.0.0.1:4173',
+    serviceWorkers: 'allow',
+    viewport: testInfo.project.name === 'mobile-390' ? { width: 390, height: 844 } : { width: 1280, height: 720 }
+  });
+  const page = await context.newPage();
+
+  try {
+    expect(await readFile('site/privacy/index.html', 'utf8')).toContain('After one online visit, the sample demo reloads offline.');
+    await page.goto('/demo/');
+
+    const lifecycle = await page.evaluate(async () => {
+      const registration = await navigator.serviceWorker.register('/sw.js');
+      const worker = registration.installing ?? registration.waiting ?? registration.active;
+      if (!worker) throw new Error('The service worker registration has no worker.');
+
+      if (worker.state !== 'activated') {
+        await new Promise<void>((resolve, reject) => {
+          const timeout = window.setTimeout(() => reject(new Error('The service worker did not activate.')), 10_000);
+          const handleState = () => {
+            if (worker.state !== 'activated') return;
+            window.clearTimeout(timeout);
+            worker.removeEventListener('statechange', handleState);
+            resolve();
+          };
+          worker.addEventListener('statechange', handleState);
+          handleState();
+        });
+      }
+
+      await navigator.serviceWorker.ready;
+      if (!navigator.serviceWorker.controller) {
+        await new Promise<void>((resolve, reject) => {
+          const timeout = window.setTimeout(() => reject(new Error('The service worker did not take control.')), 10_000);
+          const handleControl = () => {
+            if (!navigator.serviceWorker.controller) return;
+            window.clearTimeout(timeout);
+            navigator.serviceWorker.removeEventListener('controllerchange', handleControl);
+            resolve();
+          };
+          navigator.serviceWorker.addEventListener('controllerchange', handleControl);
+          handleControl();
+        });
+      }
+
+      return {
+        registrationState: registration.active?.state,
+        controlled: navigator.serviceWorker.controller !== null,
+        controllerState: navigator.serviceWorker.controller?.state,
+        scriptURL: navigator.serviceWorker.controller?.scriptURL
+      };
+    });
+    expect(lifecycle).toEqual({
+      registrationState: 'activated',
+      controlled: true,
+      controllerState: 'activated',
+      scriptURL: 'http://127.0.0.1:4173/sw.js'
+    });
+
+    await context.setOffline(true);
+    const response = await page.reload({ waitUntil: 'domcontentloaded' });
+    expect(response?.status()).toBe(200);
+    await expect(page).toHaveTitle('Demo — Calm Scroll');
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Stop sample page motion.');
+    await expect(page.getByText('Demo — sample data, nothing is saved.')).toBeVisible();
+    await expect(page.locator('#animation-count')).toHaveText('1');
+    await page.getByRole('switch', { name: 'Turn on Stable mode' }).click();
+    await expect(page.locator('#stable-toggle')).toHaveAttribute('aria-checked', 'true');
+    expect(await page.locator('.sample-animation').evaluate((element) => getComputedStyle(element).animationName)).toBe('none');
+    expect(await page.evaluate(() => navigator.serviceWorker.controller?.state)).toBe('activated');
+  } finally {
+    await context.close();
+  }
 });
 
 test('@claim:health-boundary keeps the non-clinical wording', async ({ page }) => {

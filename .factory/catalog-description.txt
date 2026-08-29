@@ -1,1 +1,1 @@
-Try a sample that stops page motion while you read.
+Try Stable mode on sample page motion before installing the extension.
