@@ -1,4 +1,4 @@
-# Copy audit — polish round 5
+# Copy audit — polish round 6
 
 Counts treat hyphenated terms and URLs as one word. Controls and headings are included because visitors rely on them. No retained sentence exceeds 22 words. No banned marketing term remains.
 
@@ -97,7 +97,7 @@ Counts treat hyphenated terms and URLs as one word. Controls and headings are in
 | ---: | --- | --- |
 | 9 | After one online visit, the sample demo reloads offline. | Pass; `offline-demo` |
 | 16 | It does not send page text, form entries, scan counts, or browsing history to a server. | Pass; `extension-data-private` |
-| 10 | Try motion controls with sample data before installing the extension. | Pass; `sample-motion-controls` |
+| 10 | Stop sample page motion before installing the desktop Chromium extension. | Pass; `sample-motion-controls` |
 
 ## Terminology
 
