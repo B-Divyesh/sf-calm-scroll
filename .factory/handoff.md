@@ -1,40 +1,36 @@
-# Calm Scroll polish round 1 handoff
+# Calm Scroll review 2 handoff
 
 ## Outcome
 
-Repaired review base `fbc22f96cbc88f60f7fd1cb37f7a3a24a28c135e` in code commit `ccd3ef90e2a76afe175163d2de51fad4f10f1bdd`. The landing now starts with the accessibility job and audience, `/demo/` is an isolated one-click interactive sample, and the extension has local settings export/import with validation and merge/replace choice.
+Completed the requested no-code adversarial review and committed the report. Verdict: **FAIL**. The live sample demo is usable and isolated, but the live site still serves the home page for unknown URLs, mobile header navigation is hidden/inconsistent, and the registered local-settings claim test does not test extension settings or import/export.
 
-The dead paid checkout and its unsupported Supporter claims were removed. The free extension’s motion controls remain available. Added real metadata, shared route chrome, focus/announcement handling for internal section navigation, a styled 404 deployment override, legal links, offline demo caching, and a 1200×630 product social image.
+## Verification run
 
-Every review ID is mapped to its change and evidence in `.factory/polish-1.md`.
-
-## Verification evidence
-
-- Clean clone: `/tmp/calm-scroll-clean-w2QKEI`, cloned at `ccd3ef90`; `npm ci` installed 401 packages with 0 audit vulnerabilities.
-- Clean-clone suite: `npm test` passed 16 Vitest tests and 31 Playwright tests; one mobile extension test skipped by design because Chromium extensions are desktop-only.
-- Every registered claim command passed in the clean clone: `demo-isolation`, `sample-motion-controls`, `sample-exceptions`, `local-settings`, `private-first-load`, `offline-demo`, and `health-boundary`.
-- `npm run build` passed. Output: initial site JS 0.60 kB raw plus 1.78 kB demo JS; CSS 18.51 kB raw. `dist/site/` and the extension ZIP were produced.
-- `npm run test:package` passed three independent builds with identical extension ZIP SHA-256: `bb331214c05faf071b74096e2c6acc3a8526f9821be0cf97661cc2d9bc513531`.
-- Browser accessibility: axe serious/critical violations were zero on `/`, `/demo/`, `/privacy/`, `/terms/`, and `/404.html` at desktop and 390px. Tests also cover no overflow, reduced motion, skip link shell, route heading focus, request privacy, and offline demo reload.
-- Local static preview returned 200 for `/` and `/demo/`. Static Web Apps is configured to rewrite a real host 404 to `/404.html` using `responseOverrides`.
-- Screenshots: `test-results/polish-1-home-390.png` and `test-results/polish-1-demo-desktop.png`.
-
-## Run
+Fresh clone: `/tmp/calm-scroll-review-2-41TLu6` at `d126df1323e0ded5d2e0c77b7229b9d517b0e8f5`.
 
 ```bash
 npm ci
 npx playwright install chromium
+npm run test:claims -- --grep @claim:demo-isolation
+npm run test:claims -- --grep @claim:sample-motion-controls
+npm run test:claims -- --grep @claim:sample-exceptions
+npm run test:claims -- --grep @claim:local-settings
+npm run test:claims -- --grep @claim:private-first-load
+npm run test:claims -- --grep @claim:offline-demo
+npm run test:claims -- --grep @claim:health-boundary
 npm test
 npm run build
-npm run test:package
 ```
 
-Use `https://calm-scroll.sociobot.in/demo/` after deployment. Reset demo clears `demo:calm-scroll:sample`; it never touches extension or license storage.
+All commands passed; `npm test` reported 31 passing tests and one expected mobile-extension skip. The report explains why the passing `local-settings` command is nevertheless not valid proof of its declared claim.
 
-## Deployment note
+## Live evidence
 
-This repository contains the static deployment root and Static Web Apps configuration but no deploy workflow or credentials. Main was pushed at `4a735857d019f5bb550a42d21d0b2ec83b4c0982`. A cold production check immediately after push still returned release `4f03685`, so deployment has not yet consumed the push. When the factory static deploy runs, cold-open `/`, `/demo/`, `/privacy/`, `/terms/`, and an unknown route to confirm the configured 404 response and current release identity.
+- Cold 390 px and desktop checks of `/`, `/demo/`, `/privacy/`, `/terms/`, and `/404.html` completed with no console errors.
+- Demo mode used only `demo:calm-scroll:sample`; Reset demo removed it; request logging showed same-origin assets only.
+- All crawlable internal, download, and declared external links returned 200.
+- `GET /does-not-exist` returned 200 home content, which is the primary routing blocker.
 
-## Known gaps
+## Product-code changes
 
-None in the reviewed product scope. Live deployment confirmation is pending the external factory deployment because no deploy command/configuration is present in this repository.
+None. Only `.factory/review-2.md` and this reviewer handoff were changed.
