@@ -65,16 +65,25 @@ service-worker activation/update, and offline demo operation.
 text, and no console errors. Evidence is in
 `.factory/evidence/repair-4-local-*`.
 
-The production deployment and exact-release check are recorded below after the
-repair commit is pushed and deployed.
+## Deployment and live verification
 
-## Deploy
+Deployment `39578086-e99d-4c2f-9933-ea53da53691e` published
+`a2fb47835bc39ed692408b2f27fe521b7d888595` to
+`https://calm-scroll.sociobot.in`.
 
 ```sh
-npm run build
-/opt/fleet/lib/deploy-static.sh calm-scroll dist/site
-EXPECTED_RELEASE_SHA="$(git rev-parse HEAD)" npm run test:live
+EXPECTED_RELEASE_SHA=a2fb47835bc39ed692408b2f27fe521b7d888595 npm run test:live
 ```
+
+passed against production. It verified the release identity, immutable assets
+and downloadable extension checksum, response policies, HTTP 404, public
+routes at desktop and 390 px in both themes, the 44 px/no-overlap regression,
+serious/critical Axe findings, console errors, same-origin demo traffic,
+keyboard focus/Back behavior, service-worker update/control, and offline demo
+behavior.
+
+`verify-url.sh` passed again on all five live routes. Its desktop/mobile
+captures and reports are in `.factory/evidence/repair-4-live-*`.
 
 ## Known gaps
 
