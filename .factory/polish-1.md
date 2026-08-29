@@ -7,6 +7,8 @@ Repair commit: `ccd3ef90e2a76afe175163d2de51fad4f10f1bdd`
 
 `C1`–`C7` are the matching `@claim:` tests in `tests/e2e/claims.spec.ts`. `E2E` is `npm test` (16 unit/contract tests and 31 browser tests, one expected mobile extension skip). `Clean` is the same suite plus every claim command from `/tmp/calm-scroll-clean-w2QKEI` after `npm ci`. `Build` is `npm run build`; `Package` is `npm run test:package`.
 
+Screenshots: `test-results/polish-1-home-390.png` (first screen at 390px) and `test-results/polish-1-demo-desktop.png` (interactive demo). The production URL was checked cold after push; it still reported the prior `4f03685` release, so no false live-fix claim is made pending the external static deployment.
+
 | Finding | Change made | Evidence |
 | --- | --- | --- |
 | F-1-1 | Replaced the metaphorical hero with the plain job and named motion-sensitive readers. | E2E home copy test; 390px browser pass |

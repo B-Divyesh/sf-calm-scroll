@@ -17,6 +17,7 @@ Every review ID is mapped to its change and evidence in `.factory/polish-1.md`.
 - `npm run test:package` passed three independent builds with identical extension ZIP SHA-256: `bb331214c05faf071b74096e2c6acc3a8526f9821be0cf97661cc2d9bc513531`.
 - Browser accessibility: axe serious/critical violations were zero on `/`, `/demo/`, `/privacy/`, `/terms/`, and `/404.html` at desktop and 390px. Tests also cover no overflow, reduced motion, skip link shell, route heading focus, request privacy, and offline demo reload.
 - Local static preview returned 200 for `/` and `/demo/`. Static Web Apps is configured to rewrite a real host 404 to `/404.html` using `responseOverrides`.
+- Screenshots: `test-results/polish-1-home-390.png` and `test-results/polish-1-demo-desktop.png`.
 
 ## Run
 
@@ -32,7 +33,7 @@ Use `https://calm-scroll.sociobot.in/demo/` after deployment. Reset demo clears 
 
 ## Deployment note
 
-This repository contains the static deployment root and Static Web Apps configuration but no deploy workflow or credentials. Push the committed main branch through the factory deployment work order, then cold-open `/`, `/demo/`, `/privacy/`, `/terms/`, and an unknown route to confirm the configured 404 response and current release identity.
+This repository contains the static deployment root and Static Web Apps configuration but no deploy workflow or credentials. Main was pushed at `4a735857d019f5bb550a42d21d0b2ec83b4c0982`. A cold production check immediately after push still returned release `4f03685`, so deployment has not yet consumed the push. When the factory static deploy runs, cold-open `/`, `/demo/`, `/privacy/`, `/terms/`, and an unknown route to confirm the configured 404 response and current release identity.
 
 ## Known gaps
 
