@@ -80,28 +80,30 @@ const browser = await chromium.launch();
 try {
   const routes = ['/', '/demo/', '/privacy/', '/terms/', '/404.html'];
   for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
-    const context = await browser.newContext({ viewport });
-    const page = await context.newPage();
-    for (const path of routes) {
-      const errors = [];
-      const recordConsole = (message) => { if (message.type() === 'error') errors.push(message.text()); };
-      page.on('console', recordConsole);
-      page.on('pageerror', (error) => errors.push(error.message));
-      const response = await page.goto(`${origin}${path}`, { waitUntil: 'networkidle' });
-      assert(response?.ok(), `${path} did not load in Chromium`);
-      assert(await page.locator('html[lang="en"]').count() === 1, `${path} must set lang=en`);
-      assert(await page.locator('main').count() === 1, `${path} must have one main landmark`);
-      assert(await page.locator('h1').count() === 1, `${path} must have one h1`);
-      assert((await page.title()).length > 4, `${path} must have a route title`);
-      assert(await page.locator('.site-header nav a').allTextContents().then((labels) => labels.map((label) => label.trim()).join('|')) === 'Demo|Install|Privacy', `${path} has inconsistent navigation`);
-      assert(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth), `${path} overflows ${viewport.width}px`);
-      const accessibility = await new AxeBuilder({ page }).analyze();
-      const severe = accessibility.violations.filter((item) => item.impact === 'serious' || item.impact === 'critical');
-      assert(severe.length === 0, `${path} has serious or critical Axe violations: ${severe.map((item) => item.id).join(', ')}`);
-      assert(errors.length === 0, `${path} logged browser errors: ${errors.join(' | ')}`);
-      page.removeListener('console', recordConsole);
+    for (const colorScheme of ['light', 'dark']) {
+      const context = await browser.newContext({ viewport, colorScheme });
+      const page = await context.newPage();
+      for (const path of routes) {
+        const errors = [];
+        const recordConsole = (message) => { if (message.type() === 'error') errors.push(message.text()); };
+        page.on('console', recordConsole);
+        page.on('pageerror', (error) => errors.push(error.message));
+        const response = await page.goto(`${origin}${path}`, { waitUntil: 'networkidle' });
+        assert(response?.ok(), `${path} did not load in Chromium`);
+        assert(await page.locator('html[lang="en"]').count() === 1, `${path} must set lang=en`);
+        assert(await page.locator('main').count() === 1, `${path} must have one main landmark`);
+        assert(await page.locator('h1').count() === 1, `${path} must have one h1`);
+        assert((await page.title()).length > 4, `${path} must have a route title`);
+        assert(await page.locator('.site-header nav a').allTextContents().then((labels) => labels.map((label) => label.trim()).join('|')) === 'Demo|Install|Privacy', `${path} has inconsistent navigation`);
+        assert(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth), `${path} overflows ${viewport.width}px`);
+        const accessibility = await new AxeBuilder({ page }).analyze();
+        const severe = accessibility.violations.filter((item) => item.impact === 'serious' || item.impact === 'critical');
+        assert(severe.length === 0, `${path} has serious or critical Axe violations in ${colorScheme} mode: ${severe.map((item) => item.id).join(', ')}`);
+        assert(errors.length === 0, `${path} logged browser errors: ${errors.join(' | ')}`);
+        page.removeListener('console', recordConsole);
+      }
+      await context.close();
     }
-    await context.close();
   }
 
   const demoContext = await browser.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: 'reduce' });
@@ -112,9 +114,15 @@ try {
   await demoPage.getByRole('link', { name: 'Try it with sample data' }).click();
   await demoPage.waitForURL(/\/demo\/\?demo=1$/);
   assert(await demoPage.getByText('Demo — sample data, nothing is saved.').isVisible(), 'The demo banner is missing');
+  assert(await demoPage.locator('#demo-state').textContent() === 'Stable mode on', 'The demo does not open in a stabilized state');
+  const reportBox = await demoPage.getByRole('heading', { name: 'Five motion sources found' }).boundingBox();
+  const stableBox = await demoPage.getByRole('switch', { name: 'Turn off Stable mode' }).boundingBox();
+  assert(reportBox && reportBox.y + reportBox.height <= 844, 'The demo report is below the first mobile viewport');
+  assert(stableBox && stableBox.y + stableBox.height <= 844, 'The Stable mode control is below the first mobile viewport');
   const animationBox = await demoPage.locator('.sample-animation').boundingBox();
   const addButtonBox = await demoPage.getByRole('button', { name: 'Add later motion' }).boundingBox();
   assert(animationBox && addButtonBox && animationBox.y + animationBox.height <= addButtonBox.y, 'Demo motion controls overlap at 390px');
+  await demoPage.getByRole('switch', { name: 'Turn off Stable mode' }).click();
   await demoPage.getByRole('switch', { name: 'Turn on Stable mode' }).click();
   assert(await demoPage.locator('html').evaluate((element) => getComputedStyle(element).scrollBehavior) === 'auto', 'Stable mode did not stop smooth scrolling');
   assert(JSON.stringify(await demoPage.evaluate(() => Object.keys(localStorage))) === JSON.stringify(['demo:calm-scroll:sample']), 'Demo state escaped its storage namespace');

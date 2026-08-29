@@ -26,7 +26,7 @@ test('the MV3 popup freezes a real page and remembers the site', async ({}, test
         .animated { animation:drift 2s infinite alternate; transition:opacity 2s }
         .transformed { transform:translateX(20px) }
         .sticky { position:sticky; top:0 }
-      </style></head><body><main><h1>Motion fixture</h1><div class="animated">Animated</div><div class="transformed">Transformed</div><nav class="sticky">Sticky</nav></main></body></html>`
+      </style></head><body><main><h1>Motion fixture</h1><video autoplay muted playsinline aria-label="Autoplay fixture"></video><div class="animated">Animated</div><div class="transformed">Transformed</div><nav class="sticky">Sticky</nav></main></body></html>`
     }));
     await page.goto('http://127.0.0.1:4173/motion-fixture.html');
     await page.bringToFront();
@@ -34,7 +34,12 @@ test('the MV3 popup freezes a real page and remembers the site', async ({}, test
     const popup = await context.newPage();
     await popup.goto(`chrome-extension://${extensionId}/popup.html`);
     await expect(popup.locator('#hostname')).toHaveText('127.0.0.1');
-    await expect(popup.locator('#motion-total')).not.toHaveText('0');
+    await expect(popup.locator('#motion-total')).toHaveText('5');
+    await expect(popup.locator('#autoplay-count')).toHaveText('1');
+    await expect(popup.locator('#animation-count')).toHaveText('1');
+    await expect(popup.locator('#transform-count')).toHaveText('1');
+    await expect(popup.locator('#sticky-count')).toHaveText('1');
+    await expect(popup.locator('#smooth-count')).toHaveText('Yes');
     await popup.locator('#stable-toggle').focus();
     await popup.locator('#stable-toggle').press('Space');
     await expect(popup.locator('#stable-toggle')).toHaveAttribute('aria-checked', 'true');

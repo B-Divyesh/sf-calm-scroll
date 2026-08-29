@@ -3,7 +3,7 @@
 Calm Scroll is a browser extension for people who find page motion uncomfortable.
 It reports common page motion and offers a reversible Stable mode per site.
 
-Try the isolated sample at <https://calm-scroll.sociobot.in/?demo=1>. It fits phone and desktop screens. Install the extension on desktop Chrome or Chromium.
+Try the isolated sample at <https://calm-scroll.sociobot.in/?demo=1>. It fits phone and desktop screens. Install the extension on desktop Chromium.
 
 ## What it does
 
@@ -31,7 +31,7 @@ Each public claim is listed in `.factory/claims.json`. Run one claim with its li
 
 After one online visit, the sample demo reloads offline.
 
-## Install on desktop Chrome or Chromium
+## Install on desktop Chromium
 
 1. Build the project and unzip `dist/site/downloads/calm-scroll-chrome-v1.0.0.zip`.
 2. Open `chrome://extensions` and turn on Developer mode.

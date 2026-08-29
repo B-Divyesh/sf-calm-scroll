@@ -8,7 +8,7 @@ const fixture = `<!doctype html><html lang="en" style="scroll-behavior:smooth"><
   .animated { animation:drift 2s infinite alternate; transition:opacity 2s }
   .transformed { transform:translateX(20px) }
   .sticky { position:sticky; top:0 }
-</style></head><body><main><h1>Motion fixture</h1><div class="animated">Animated</div><div class="transformed">Transformed</div><nav class="sticky">Sticky</nav></main></body></html>`;
+</style></head><body><main><h1>Motion fixture</h1><p id="private-page-text">PAGE_TEXT_SENTINEL</p><label>Private note <input aria-label="Private note" value="FORM_ENTRY_SENTINEL" /></label><video autoplay muted playsinline aria-label="Autoplay fixture"></video><div class="animated">Animated</div><div class="transformed">Transformed</div><nav class="sticky">Sticky</nav></main></body></html>`;
 
 async function openExtension() {
   const userDataDir = await mkdtemp(join(tmpdir(), 'calm-scroll-claim-'));
@@ -20,7 +20,7 @@ async function openExtension() {
   if (!worker) worker = await context.waitForEvent('serviceworker');
   const extensionId = new URL(worker.url()).host;
   const page = await context.newPage();
-  await page.route('**/motion-fixture.html', (route) => route.fulfill({ status: 200, contentType: 'text/html', body: fixture }));
+  await page.route('**/motion-fixture.html*', (route) => route.fulfill({ status: 200, contentType: 'text/html', body: fixture }));
   await page.goto('http://127.0.0.1:4173/motion-fixture.html');
   const popup = await context.newPage();
   await popup.goto(`chrome-extension://${extensionId}/popup.html`);
@@ -50,6 +50,10 @@ test('@claim:sample-motion-controls stops all sample motion and preserves text',
   await expect(page.locator('#transform-count')).toHaveText('1');
   await expect(page.locator('#sticky-count')).toHaveText('1');
   await expect(page.locator('#smooth-count')).toHaveText('Yes');
+  await expect(page.locator('#stable-toggle')).toHaveAttribute('aria-checked', 'true');
+  expect(await page.locator('.sample-animation').evaluate((el) => getComputedStyle(el).animationName)).toBe('none');
+  await page.locator('#stable-toggle').evaluate((element: HTMLButtonElement) => element.click());
+  await expect(page.locator('#stable-toggle')).toHaveAttribute('aria-checked', 'false');
   expect(await page.locator('html').evaluate((element) => getComputedStyle(element).scrollBehavior)).toBe('smooth');
   const copy = await page.locator('#sample-copy').textContent();
   await page.locator('#stable-toggle').evaluate((element: HTMLButtonElement) => element.click());
@@ -67,7 +71,7 @@ test('@claim:sample-motion-controls stops all sample motion and preserves text',
 
 test('@claim:sample-exceptions restore only the selected sample behavior', async ({ page }) => {
   await page.goto('/demo/');
-  await page.locator('#stable-toggle').evaluate((element: HTMLButtonElement) => element.click());
+  await expect(page.locator('#stable-toggle')).toHaveAttribute('aria-checked', 'true');
   await page.getByLabel('Allow media playback').check();
   expect(await page.locator('.sample-autoplay').evaluate((el) => getComputedStyle(el).visibility)).toBe('visible');
   expect(await page.locator('.sample-sticky').evaluate((el) => getComputedStyle(el).position)).toBe('static');
@@ -80,19 +84,25 @@ test('@claim:sample-exceptions restore only the selected sample behavior', async
 });
 
 test('@claim:demo-responsive works from the query entry point at phone and desktop sizes', async ({ page }) => {
-  await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/?demo=1');
   await expect(page).toHaveURL(/\/demo\/\?demo=1$/);
   await expect(page.getByText('Demo — sample data, nothing is saved.')).toBeVisible();
+  const reportBox = await page.getByRole('heading', { level: 2, name: 'Five motion sources found' }).boundingBox();
+  const stableBox = await page.getByRole('switch', { name: 'Turn off Stable mode' }).boundingBox();
+  const viewportHeight = page.viewportSize()!.height;
+  expect(reportBox).not.toBeNull();
+  expect(stableBox).not.toBeNull();
+  expect(reportBox!.y + reportBox!.height).toBeLessThanOrEqual(viewportHeight);
+  expect(stableBox!.y + stableBox!.height).toBeLessThanOrEqual(viewportHeight);
   const animationBox = await page.locator('.sample-animation').boundingBox();
   const addButtonBox = await page.getByRole('button', { name: 'Add later motion' }).boundingBox();
   expect(animationBox).not.toBeNull();
   expect(addButtonBox).not.toBeNull();
   expect(animationBox!.y + animationBox!.height).toBeLessThanOrEqual(addButtonBox!.y);
-  await page.getByRole('switch', { name: 'Turn on Stable mode' }).click();
-  await expect(page.locator('#stable-toggle')).toHaveAttribute('aria-checked', 'true');
-  await page.getByRole('button', { name: 'Reset demo' }).click();
+  await page.getByRole('switch', { name: 'Turn off Stable mode' }).click();
   await expect(page.locator('#stable-toggle')).toHaveAttribute('aria-checked', 'false');
+  await page.getByRole('button', { name: 'Reset demo' }).click();
+  await expect(page.locator('#stable-toggle')).toHaveAttribute('aria-checked', 'true');
   const width = await page.evaluate(() => ({ scroll: document.documentElement.scrollWidth, client: document.documentElement.clientWidth }));
   expect(width.scroll).toBeLessThanOrEqual(width.client);
 });
@@ -133,13 +143,52 @@ test('@claim:local-settings exports, clears, imports, and reapplies extension ru
   }
 });
 
+test('@claim:extension-data-private never sends fixture data or extension scan data to a server', async ({}, testInfo) => {
+  test.skip(testInfo.project.name !== 'desktop-chromium', 'unpacked extensions require desktop Chromium');
+  const userDataDir = await mkdtemp(join(tmpdir(), 'calm-scroll-private-'));
+  const context = await chromium.launchPersistentContext(userDataDir, {
+    channel: 'chromium', headless: true,
+    args: [`--disable-extensions-except=${resolve('.output/chrome-mv3')}`, `--load-extension=${resolve('.output/chrome-mv3')}`]
+  });
+  const requests: Array<{ url: string; postData: string | null; headers: Record<string, string> }> = [];
+  // This listener is active before either the fixture tab or the extension popup opens.
+  context.on('request', (request) => requests.push({ url: request.url(), postData: request.postData(), headers: request.headers() }));
+
+  try {
+    let [worker] = context.serviceWorkers();
+    if (!worker) worker = await context.waitForEvent('serviceworker');
+    const extensionId = new URL(worker.url()).host;
+    await context.route('**/motion-fixture.html*', (route) => route.fulfill({ status: 200, contentType: 'text/html', body: fixture }));
+
+    const page = await context.newPage();
+    await page.goto('http://127.0.0.1:4173/motion-fixture.html?history=HISTORY_SENTINEL');
+    await expect(page.locator('#private-page-text')).toHaveText('PAGE_TEXT_SENTINEL');
+    await expect(page.getByLabel('Private note')).toHaveValue('FORM_ENTRY_SENTINEL');
+    const popup = await context.newPage();
+    await popup.goto(`chrome-extension://${extensionId}/popup.html`);
+    await expect(popup.locator('#motion-total')).toHaveText('5');
+    await expect(popup.locator('#autoplay-count')).toHaveText('1');
+    await popup.locator('#stable-toggle').click();
+    await expect.poll(() => page.locator('.transformed').evaluate((element) => getComputedStyle(element).transform)).toBe('none');
+
+    const remote = requests.filter((request) => !request.url.startsWith('http://127.0.0.1:4173/') && !request.url.startsWith(`chrome-extension://${extensionId}/`));
+    expect(remote).toEqual([]);
+    const sentinels = ['PAGE_TEXT_SENTINEL', 'FORM_ENTRY_SENTINEL', 'HISTORY_SENTINEL', '5'];
+    const remotePayload = remote.map((request) => `${request.url}\n${request.postData ?? ''}\n${JSON.stringify(request.headers)}`).join('\n');
+    for (const sentinel of sentinels) expect(remotePayload).not.toContain(sentinel);
+  } finally {
+    await context.close();
+    await rm(userDataDir, { recursive: true, force: true });
+  }
+});
+
 test('@claim:extension-desktop-chromium loads the packaged extension in Chromium', async ({}, testInfo) => {
   test.skip(testInfo.project.name !== 'desktop-chromium', 'unpacked extensions require desktop Chromium');
   const opened = await openExtension();
   try {
     await expect(opened.popup).toHaveTitle('Calm Scroll controls');
     await expect(opened.popup.locator('#hostname')).toHaveText('127.0.0.1');
-    await expect(opened.popup.locator('#motion-total')).not.toHaveText('0');
+    await expect(opened.popup.locator('#motion-total')).toHaveText('5');
   } finally {
     await opened.context.close();
     await rm(opened.userDataDir, { recursive: true, force: true });
@@ -150,7 +199,7 @@ test('@claim:private-first-load makes no third-party requests', async ({ page })
   const requests: string[] = []; page.on('request', (request) => requests.push(request.url()));
   await page.goto('/');
   await page.getByRole('link', { name: 'Try it with sample data' }).click();
-  await page.getByRole('switch', { name: 'Turn on Stable mode' }).click();
+  await page.getByRole('switch', { name: 'Turn off Stable mode' }).click();
   await page.getByRole('button', { name: 'Reset demo' }).click();
   const origin = new URL(page.url()).origin;
   expect(requests.length).toBeGreaterThan(0); expect(requests.every((url) => new URL(url).origin === origin)).toBe(true);
@@ -220,9 +269,10 @@ test('@claim:offline-demo reloads after awaited service-worker activation and co
     const response = await page.reload({ waitUntil: 'domcontentloaded' });
     expect(response?.status()).toBe(200);
     await expect(page).toHaveTitle('Demo — Calm Scroll');
-    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Stop sample page motion.');
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('See a steady page.');
     await expect(page.getByText('Demo — sample data, nothing is saved.')).toBeVisible();
     await expect(page.locator('#animation-count')).toHaveText('1');
+    await page.getByRole('switch', { name: 'Turn off Stable mode' }).click();
     await page.getByRole('switch', { name: 'Turn on Stable mode' }).click();
     await expect(page.locator('#stable-toggle')).toHaveAttribute('aria-checked', 'true');
     expect(await page.locator('.sample-animation').evaluate((element) => getComputedStyle(element).animationName)).toBe('none');

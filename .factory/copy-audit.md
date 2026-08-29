@@ -1,4 +1,4 @@
-# Copy audit — polish round 3
+# Copy audit — polish round 5
 
 Counts treat hyphenated terms and URLs as one word. Controls and headings are included because visitors rely on them. No retained sentence exceeds 22 words. No banned marketing term remains.
 
@@ -10,9 +10,9 @@ Counts treat hyphenated terms and URLs as one word. Controls and headings are in
 | 6 | Stop page motion while you read. | Pass |
 | 17 | For people made uncomfortable by page motion, Calm Scroll pauses autoplay, animation, smooth scrolling, and sticky effects. | Pass |
 | 5 | Try it with sample data | Pass |
-| 6 | Install on desktop Chrome or Chromium | Pass |
+| 5 | Install on desktop Chromium | Pass; `extension-desktop-chromium` |
 | 7 | The demo fits phone and desktop screens. | Pass; `demo-responsive` |
-| 8 | The extension installs on desktop Chrome or Chromium. | Pass; `extension-desktop-chromium` |
+| 6 | The extension installs on desktop Chromium. | Pass; `extension-desktop-chromium` |
 | 6 | Extension settings stay in this browser. | Pass; `local-settings` |
 | 9 | Calm Scroll reports motion before you choose a change. | Pass; `sample-motion-controls` |
 | 3 | Local per-site settings | Pass; `local-settings` |
@@ -31,8 +31,8 @@ Counts treat hyphenated terms and URLs as one word. Controls and headings are in
 | 5 | Try the motion controls first. | Pass |
 | 10 | Use the sample page to inspect and change real moving elements. | Pass |
 | 3 | Open sample demo | Pass |
-| 5 | Install the extension on desktop. | Pass |
-| 15 | Download the extension ZIP, unzip it, then load its folder in desktop Chrome’s Developer mode. | Pass |
+| 6 | Install the extension in desktop Chromium. | Pass |
+| 15 | Download the extension ZIP, unzip it, then load its folder in desktop Chromium’s Developer mode. | Pass; `extension-desktop-chromium` |
 | 8 | Save the extension ZIP on your desktop computer. | Pass |
 | 7 | Visit chrome://extensions and turn on Developer mode. | Pass |
 | 11 | Choose Load unpacked, select the unzipped folder, then pin Calm Scroll. | Pass |
@@ -52,7 +52,7 @@ Counts treat hyphenated terms and URLs as one word. Controls and headings are in
 | 13 | It reports common page motion and offers a reversible Stable mode per site. | Pass; motion claims |
 | 6 | Try the isolated sample at https://calm-scroll.sociobot.in/?demo=1. | Pass |
 | 7 | It fits phone and desktop screens. | Pass; `demo-responsive` |
-| 8 | Install the extension on desktop Chrome or Chromium. | Pass; `extension-desktop-chromium` |
+| 6 | Install the extension on desktop Chromium. | Pass; `extension-desktop-chromium` |
 | 10 | Reports autoplay media, animations, transforms, sticky layers, and smooth scrolling. | Pass; `sample-motion-controls` |
 | 9 | Applies Stable mode with optional media and sticky-layer exceptions. | Pass; `sample-exceptions` |
 | 8 | Saves extension choices in browser-local extension storage. | Pass; `local-settings` |
@@ -73,12 +73,31 @@ Counts treat hyphenated terms and URLs as one word. Controls and headings are in
 | 10 | public/staticwebapp.config.json supplies the static-host headers and styled 404 response. | Pass |
 | 4 | MIT. See LICENSE. | Pass |
 
+## Demo
+
+| Words | Text | Result |
+| ---: | --- | --- |
+| 6 | Demo — sample data, nothing is saved. | Pass; `demo-isolation` |
+| 2 | Reset demo | Pass |
+| 3 | Start for real | Pass |
+| 4 | See a steady page. | Pass |
+| 7 | Five motion sources are already held still. | Pass; `sample-motion-controls` |
+| 4 | Five motion sources found | Pass; `sample-motion-controls` |
+| 4 | Turn off Stable mode | Pass; `sample-motion-controls` |
+| 11 | Stable mode is on. Turn it off to restore sample motion. | Pass; `sample-exceptions` |
+| 11 | Stable mode is off. Turn it on to steady this sample. | Pass; `sample-motion-controls` |
+| 3 | Allow media playback | Pass; `sample-exceptions` |
+| 4 | Keep sticky layers | Pass; `sample-exceptions` |
+| 9 | The quiet route through the estuary reopened this morning. | Sample content |
+| 16 | The footpath now follows the reed beds, where the first boats leave before the tide rises. | Sample content |
+
 ## Privacy and catalog
 
 | Words | Text | Result |
 | ---: | --- | --- |
 | 9 | After one online visit, the sample demo reloads offline. | Pass; `offline-demo` |
-| 9 | Try sample page motion controls before installing the extension. | Pass; `sample-motion-controls` |
+| 16 | It does not send page text, form entries, scan counts, or browsing history to a server. | Pass; `extension-data-private` |
+| 10 | Try motion controls with sample data before installing the extension. | Pass; `sample-motion-controls` |
 
 ## Terminology
 

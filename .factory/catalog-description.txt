@@ -1,1 +1,1 @@
-Try sample page motion controls before installing the extension.
+Try motion controls with sample data before installing the extension.

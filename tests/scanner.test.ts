@@ -34,4 +34,12 @@ describe('motion scanner', () => {
       <div data-calm-scroll-ui style="position:fixed"></div>`;
     expect(totalMotion(scanDocument(document))).toBe(0);
   });
+
+  it('does not mistake reduced-motion duration overrides for moving elements', () => {
+    document.head.innerHTML = `<style>
+      * { animation-duration: .00001ms !important; transition-duration: .00001ms !important; }
+    </style>`;
+    document.body.innerHTML = '<div>Still content</div>';
+    expect(scanDocument(document).animatedElements).toBe(0);
+  });
 });

@@ -25,6 +25,14 @@ describe('product contracts', () => {
     expect(source).toContain('MutationObserver');
   });
 
+  it('derives the demo report from the same scanner as the extension', () => {
+    const demo = readFileSync('site/src/demo.ts', 'utf8');
+    const content = readFileSync('entrypoints/content.ts', 'utf8');
+    expect(demo).toContain("import { scanDocument } from '../../src/core/scanner'");
+    expect(demo).toContain("scanDocument(document, get('sample-browser'))");
+    expect(content).toContain('report: scanDocument()');
+  });
+
   it('gives every registered claim exactly one matching tagged test', () => {
     const claims = JSON.parse(readFileSync('.factory/claims.json', 'utf8')) as Array<{ id: string; test: string }>;
     const source = readFileSync('tests/e2e/claims.spec.ts', 'utf8');

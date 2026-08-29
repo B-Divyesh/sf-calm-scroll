@@ -18,14 +18,22 @@ function isVisible(element: Element, style: CSSStyleDeclaration): boolean {
   return style.display !== 'none' && style.visibility !== 'hidden' && !element.hasAttribute('hidden');
 }
 
-export function scanDocument(doc: Document = document): MotionReport {
+function hasMeaningfulDuration(value: string): boolean {
+  return value.split(',').some((part) => {
+    const duration = Number.parseFloat(part);
+    if (!Number.isFinite(duration)) return false;
+    return part.trim().endsWith('ms') ? duration >= 10 : duration >= 0.01;
+  });
+}
+
+export function scanDocument(doc: Document = document, root: ParentNode = doc.body): MotionReport {
   if (!doc.documentElement) return { ...EMPTY_REPORT };
 
   const report = { ...EMPTY_REPORT };
   const rootStyle = getComputedStyle(doc.documentElement);
   report.smoothScroll = rootStyle.scrollBehavior === 'smooth';
 
-  const elements = Array.from(doc.querySelectorAll<HTMLElement>('body *'));
+  const elements = Array.from(root.querySelectorAll<HTMLElement>('*'));
   for (const element of elements) {
     if (element.closest('[data-calm-scroll-ui]')) continue;
     const style = getComputedStyle(element);
@@ -34,7 +42,7 @@ export function scanDocument(doc: Document = document): MotionReport {
     if (element instanceof HTMLMediaElement && (element.autoplay || (!element.paused && !element.ended))) {
       report.autoplayMedia += 1;
     }
-    if ((style.animationName && style.animationName !== 'none') || parseFloat(style.animationDuration) > 0 || parseFloat(style.transitionDuration) > 0) {
+    if ((style.animationName && style.animationName !== 'none') || hasMeaningfulDuration(style.animationDuration) || hasMeaningfulDuration(style.transitionDuration)) {
       report.animatedElements += 1;
     }
     if (style.transform && style.transform !== 'none') report.transformedElements += 1;

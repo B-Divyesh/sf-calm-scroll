@@ -3,13 +3,16 @@ import { expect, test } from '@playwright/test';
 
 const routes = ['/', '/demo/', '/privacy/', '/terms/', '/404.html'];
 
-for (const path of routes) {
-  test(`${path} has an accessible semantic shell`, async ({ page }) => {
+for (const colorScheme of ['light', 'dark'] as const) {
+  for (const path of routes) {
+  test(`${path} has an accessible semantic shell in ${colorScheme} mode`, async ({ page }) => {
     const errors: string[] = []; page.on('console', (message) => { if (message.type() === 'error') errors.push(message.text()); });
+    await page.emulateMedia({ colorScheme });
     await page.goto(path); await expect(page.locator('main')).toBeVisible(); await expect(page.getByRole('heading', { level: 1 })).toHaveCount(1);
     const accessibility = await new AxeBuilder({ page }).analyze();
     expect(accessibility.violations.filter((item) => ['serious', 'critical'].includes(item.impact ?? ''))).toEqual([]); expect(errors).toEqual([]);
   });
+  }
 }
 
 test('all routes use the same complete header navigation', async ({ page }) => {
@@ -44,8 +47,8 @@ test('home offers an immediate demo and labels desktop installation', async ({ p
   await page.goto('/'); await expect(page).toHaveTitle('Calm Scroll — Stop page motion while you read');
   await expect(page.getByRole('link', { name: 'Try it with sample data' })).toHaveAttribute('href', '/?demo=1');
   await expect(page.getByText('The demo fits phone and desktop screens.')).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Install on desktop Chrome or Chromium' })).toBeVisible();
-  await expect(page.locator('#install .section-intro > p')).toHaveText('Download the extension ZIP, unzip it, then load its folder in desktop Chrome’s Developer mode.');
+  await expect(page.getByRole('link', { name: 'Install on desktop Chromium' })).toBeVisible();
+  await expect(page.locator('#install .section-intro > p')).toHaveText('Download the extension ZIP, unzip it, then load its folder in desktop Chromium’s Developer mode.');
   await expect(page.getByText('The Chrome Web Store listing is not available yet.')).toHaveCount(0);
 });
 
@@ -66,9 +69,22 @@ test('route navigation and browser Back focus and announce the page heading', as
   await page.locator('.site-header').getByRole('link', { name: 'Demo' }).click();
   await expect(page).toHaveURL(/\/demo\//);
   await expect(page.getByRole('heading', { level: 1 })).toBeFocused();
-  await expect(page.locator('#route-announcement')).toContainText('Stop sample page motion. opened');
+  await expect(page.locator('#route-announcement')).toContainText('See a steady page. opened');
   await page.goBack();
   await expect(page).toHaveURL(/\/$/);
   await expect(page.getByRole('heading', { level: 1 })).toBeFocused();
   await expect(page.locator('#route-announcement')).toContainText('Stop page motion while you read. opened');
+});
+
+test('the demo opens with the report and a stabilized result in the first viewport', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/?demo=1');
+  await expect(page.locator('#demo-state')).toHaveText('Stable mode on');
+  await expect(page.locator('#stable-toggle')).toHaveAttribute('aria-checked', 'true');
+  const report = await page.getByRole('heading', { level: 2, name: 'Five motion sources found' }).boundingBox();
+  const control = await page.getByRole('switch', { name: 'Turn off Stable mode' }).boundingBox();
+  expect(report).not.toBeNull();
+  expect(control).not.toBeNull();
+  expect(report!.y + report!.height).toBeLessThanOrEqual(844);
+  expect(control!.y + control!.height).toBeLessThanOrEqual(844);
 });
