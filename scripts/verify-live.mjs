@@ -115,7 +115,7 @@ try {
   await demoPage.waitForURL(/\/demo\/\?demo=1$/);
   assert(await demoPage.getByText('Demo — sample data, nothing is saved.').isVisible(), 'The demo banner is missing');
   assert(await demoPage.locator('#demo-state').textContent() === 'Stable mode on', 'The demo does not open in a stabilized state');
-  const reportBox = await demoPage.getByRole('heading', { name: 'Five motion sources found' }).boundingBox();
+  const reportBox = await demoPage.getByRole('heading', { name: 'Sample motion report' }).boundingBox();
   const stableBox = await demoPage.getByRole('switch', { name: 'Turn off Stable mode' }).boundingBox();
   assert(reportBox && reportBox.y + reportBox.height <= 844, 'The demo report is below the first mobile viewport');
   assert(stableBox && stableBox.y + stableBox.height <= 844, 'The Stable mode control is below the first mobile viewport');

@@ -87,7 +87,7 @@ test('@claim:demo-responsive works from the query entry point at phone and deskt
   await page.goto('/?demo=1');
   await expect(page).toHaveURL(/\/demo\/\?demo=1$/);
   await expect(page.getByText('Demo — sample data, nothing is saved.')).toBeVisible();
-  const reportBox = await page.getByRole('heading', { level: 2, name: 'Five motion sources found' }).boundingBox();
+  const reportBox = await page.getByRole('heading', { level: 2, name: 'Sample motion report' }).boundingBox();
   const stableBox = await page.getByRole('switch', { name: 'Turn off Stable mode' }).boundingBox();
   const viewportHeight = page.viewportSize()!.height;
   expect(reportBox).not.toBeNull();

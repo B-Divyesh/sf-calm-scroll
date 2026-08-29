@@ -81,8 +81,8 @@ Counts treat hyphenated terms and URLs as one word. Controls and headings are in
 | 2 | Reset demo | Pass |
 | 3 | Start for real | Pass |
 | 4 | See a steady page. | Pass |
-| 7 | Five motion sources are already held still. | Pass; `sample-motion-controls` |
-| 4 | Five motion sources found | Pass; `sample-motion-controls` |
+| 8 | Stable mode is already on for this sample. | Pass; `sample-motion-controls` |
+| 3 | Sample motion report | Pass; `sample-motion-controls` |
 | 4 | Turn off Stable mode | Pass; `sample-motion-controls` |
 | 11 | Stable mode is on. Turn it off to restore sample motion. | Pass; `sample-exceptions` |
 | 11 | Stable mode is off. Turn it on to steady this sample. | Pass; `sample-motion-controls` |

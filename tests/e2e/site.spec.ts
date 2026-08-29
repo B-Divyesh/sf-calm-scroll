@@ -81,7 +81,7 @@ test('the demo opens with the report and a stabilized result in the first viewpo
   await page.goto('/?demo=1');
   await expect(page.locator('#demo-state')).toHaveText('Stable mode on');
   await expect(page.locator('#stable-toggle')).toHaveAttribute('aria-checked', 'true');
-  const report = await page.getByRole('heading', { level: 2, name: 'Five motion sources found' }).boundingBox();
+  const report = await page.getByRole('heading', { level: 2, name: 'Sample motion report' }).boundingBox();
   const control = await page.getByRole('switch', { name: 'Turn off Stable mode' }).boundingBox();
   expect(report).not.toBeNull();
   expect(control).not.toBeNull();
