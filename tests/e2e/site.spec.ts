@@ -6,11 +6,17 @@ const routes = ['/', '/demo/', '/privacy/', '/terms/', '/404.html'];
 for (const colorScheme of ['light', 'dark'] as const) {
   for (const path of routes) {
   test(`${path} has an accessible semantic shell in ${colorScheme} mode`, async ({ page }) => {
-    const errors: string[] = []; page.on('console', (message) => { if (message.type() === 'error') errors.push(message.text()); });
+    const browserIssues: string[] = [];
+    page.on('console', (message) => {
+      if (message.type() === 'error' || (message.type() === 'warning' && /Permissions-Policy/i.test(message.text()))) {
+        browserIssues.push(`${message.type()}: ${message.text()}`);
+      }
+    });
+    page.on('pageerror', (error) => browserIssues.push(`pageerror: ${error.message}`));
     await page.emulateMedia({ colorScheme });
     await page.goto(path); await expect(page.locator('main')).toBeVisible(); await expect(page.getByRole('heading', { level: 1 })).toHaveCount(1);
     const accessibility = await new AxeBuilder({ page }).analyze();
-    expect(accessibility.violations.filter((item) => ['serious', 'critical'].includes(item.impact ?? ''))).toEqual([]); expect(errors).toEqual([]);
+    expect(accessibility.violations.filter((item) => ['serious', 'critical'].includes(item.impact ?? ''))).toEqual([]); expect(browserIssues).toEqual([]);
   });
   }
 }

@@ -57,6 +57,15 @@ describe('product contracts', () => {
     expect(config).toHaveProperty('responseOverrides.404.rewrite', '/404.html');
   });
 
+  it('uses a console-clean Permissions-Policy', () => {
+    const config = JSON.parse(readFileSync('public/staticwebapp.config.json', 'utf8')) as {
+      globalHeaders?: Record<string, string>;
+    };
+    const policy = config.globalHeaders?.['Permissions-Policy'];
+    expect(policy).toBeTruthy();
+    expect(policy).not.toMatch(/(?:^|[,\s])web-share\s*=/);
+  });
+
   it('keeps the catalog description verb-first and within 120 characters', () => {
     const description = readFileSync('.factory/catalog-description.txt', 'utf8').trim();
     expect(description.length).toBeLessThanOrEqual(120);

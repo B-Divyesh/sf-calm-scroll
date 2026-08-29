@@ -1,1 +1,1 @@
-Try motion controls with sample data before installing the extension.
+Stop sample page motion before installing the desktop Chromium extension.

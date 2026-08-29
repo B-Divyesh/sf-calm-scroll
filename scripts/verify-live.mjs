@@ -34,6 +34,7 @@ expectIncludes(csp, "frame-ancestors 'none'", 'CSP');
 const permissions = header(home, 'permissions-policy');
 expectIncludes(permissions, 'camera=()', 'Permissions-Policy');
 expectIncludes(permissions, 'geolocation=()', 'Permissions-Policy');
+assert(!/(?:^|[,\s])web-share\s*=/.test(permissions), 'Permissions-Policy must not include unsupported web-share');
 
 const html = await home.text();
 const assets = [...html.matchAll(/(?:src|href)="(\/assets\/[^"?#]+\.(?:js|css|avif|webp))"/g)].map((match) => match[1]);
@@ -84,10 +85,15 @@ try {
       const context = await browser.newContext({ viewport, colorScheme });
       const page = await context.newPage();
       for (const path of routes) {
-        const errors = [];
-        const recordConsole = (message) => { if (message.type() === 'error') errors.push(message.text()); };
+        const browserIssues = [];
+        const recordConsole = (message) => {
+          if (message.type() === 'error' || (message.type() === 'warning' && /Permissions-Policy/i.test(message.text()))) {
+            browserIssues.push(`${message.type()}: ${message.text()}`);
+          }
+        };
+        const recordPageError = (error) => browserIssues.push(`pageerror: ${error.message}`);
         page.on('console', recordConsole);
-        page.on('pageerror', (error) => errors.push(error.message));
+        page.on('pageerror', recordPageError);
         const response = await page.goto(`${origin}${path}`, { waitUntil: 'networkidle' });
         assert(response?.ok(), `${path} did not load in Chromium`);
         assert(await page.locator('html[lang="en"]').count() === 1, `${path} must set lang=en`);
@@ -99,8 +105,9 @@ try {
         const accessibility = await new AxeBuilder({ page }).analyze();
         const severe = accessibility.violations.filter((item) => item.impact === 'serious' || item.impact === 'critical');
         assert(severe.length === 0, `${path} has serious or critical Axe violations in ${colorScheme} mode: ${severe.map((item) => item.id).join(', ')}`);
-        assert(errors.length === 0, `${path} logged browser errors: ${errors.join(' | ')}`);
+        assert(browserIssues.length === 0, `${path} logged browser errors or Permissions-Policy warnings: ${browserIssues.join(' | ')}`);
         page.removeListener('console', recordConsole);
+        page.removeListener('pageerror', recordPageError);
       }
       await context.close();
     }
